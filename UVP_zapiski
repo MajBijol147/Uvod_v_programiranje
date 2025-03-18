@@ -1,0 +1,13 @@
+Float – približek števila. “3.14 je float π”
+a = 2 je zapis spremenljivke. Tisto na desni shrani kot tisto v levi.
+
+za tomo nalogo "04_datumi" uporabi stran 
+
+ if leto % 4 == 0:
+        if leto % 100 == 0:
+            if leto % 400 == 0:
+                return True
+            else: return False
+        else: return True
+    else: return False
+            
