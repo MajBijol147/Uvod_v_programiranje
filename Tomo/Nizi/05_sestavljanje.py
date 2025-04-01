@@ -1,93 +1,73 @@
 # =============================================================================
-# Rezine in rekurzija
-# =====================================================================@027486=
+# Sestavljanje
+#
+# Pri reševanju nalog poskusite čim bolj uporabljati f-nize in pripadajoče metode na nizih. Kaj več o f-nizih si preberite v <a href="https://docs.python.org/3/tutorial/inputoutput.html#formatted-string-literals">dokumentaciji</a>.
+# =====================================================================@027493=
 # 1. podnaloga
-# Sestavite funkcijo `filtriraj`, ki sprejme dva niza in vrne nov niz sestavljen
-# zgolj iz znakov prvega niza, ki so hkrati tudi v drugem nizu, preostale znake
-# pa zamenja z _
-# Velikost črk je nepomembna.
+# Sestavite funkcijo `pozdrav`, ki sprejme ime in priimek osebe in vrne pozdravni nagovor.
+# Ker se držimo pravopisa naj bodo vsa imena in priimki zapisani z veliko
+# začetnico ne glede na to, kako so podani.
 # 
-#     >>> filtriraj("Ne gremo še domov", "ngm")
-#     "N__g__m_______m__"
+#     >>> pozdrav("matja", "pretnar")
+#     "Lep pozdrav! Matija Pretnar."
+#     >>> pozdrav("imaM več imen", "In en sam priimek")
+#     "Lep pozdrav! Imam Več Imen In En Sam Priimek."
 # =============================================================================
-def filtriraj(niz1, niz2):
-    if niz1 == "" or niz2 == "":
-        return ""
-    elif niz1[0].lower() in niz2.lower():
-        return niz1[0] + filtriraj(niz1[1:], niz2)
-    else:
-        return "_" + filtriraj(niz1[1:], niz2)
-# =====================================================================@027490=
+def pozdrav(ime, priimek):
+    Ime = ""
+    Priimek = ""
+    for i in range(len(ime)):
+        if i == 0 or ime[i - 1] == " ":
+            Ime = Ime + ime[i].capitalize()
+        else:
+            Ime = Ime + ime[i].lower()
+    
+    for i in range(len(priimek)):
+        if i == 0 or priimek[i - 1] == " ":
+            Priimek = Priimek + priimek[i].capitalize()
+        else:
+            Priimek = Priimek + priimek[i].lower()
+
+    return f"Lep pozdrav! {Ime} {Priimek}."
+# =====================================================================@027494=
 # 2. podnaloga
-# Sestavite funkcijo `pretvori`, ki sprejme niz in bazo ter vrne podano število
-# v desetiškem zapisu. Ko zmanjka števil si znaki sledijo po angleški abecedi
-# `0123456789ABC...`. Primer vrstnega reda lahko najdete v
-# `string.ascii_uppercase`. Lahko predpostavite, da bo baza vedno med 2 in 36.
+# Sestavite funkcijo `zmnozi`, ki sprejme dve števili in vrne njun produkt
+# izpisan na 7 decimalk natančno
 # 
-#     >>> pretvori("10001", 2)
-#     17
-#     >>> pretvori("2ACBD04", 36)
-#     4978911892
+# 
+#     >>> zmnozi(12.345678, 13.56789098765456789)
+#     "167.5048133"
+#     >>> zmnozi(12.3456789123, 100000)
+#     "1234567.8912300"
 # =============================================================================
-def pretvori(niz, baza):  
-    znaki = "0123456789" + string.ascii_uppercase
-    if niz == "":
-        return 0
-    else:
-        vrednost = znaki.find(niz[-1])
-        return pretvori(niz[:-1], baza) * baza + vrednost
-        
-        
-# =====================================================================@027489=
+def zmnozi(a, b):
+    zmnozek = f"{round(a * b, 7)}"
+    while len(zmnozek[zmnozek.find("."):]) <= 7:
+        zmnozek = zmnozek + "0"
+    return zmnozek
+# =====================================================================@027495=
 # 3. podnaloga
-# Sestavite funkcijo `izbrisi_podvojene`, ki sprejme niz in odstrani vse
-# zaporedno enake znake, kjer velikost črk ni pomembna. Če se po izbrisu pojavijo
-# nove podvojitve, naj jih funkcija ne izbriše.
+# Sestavite funkcijo `turist`, ki sprejme številko računa, ceno, stopnjo davka
+# na dodano vrednost v odstotkih in izpiše lep račun.
+# Številka računa naj bo dolga vsaj 7 znakov, če je prekratka, ji dodajte ničle.
+# Vse številke izpisuje kot cela števila.
 # 
-#     >>> izbrisi_podvojene("aaab")
-#     "b"
-#     >>> izbrisi_podvojene("abaab")
-#     "abb"
+#     >>> turist(10, 100, 22)
+#     "-RACUN---0000010\nCena: 100 EUR\nDDV: 22\nSkupno: 122\nHvala za obisk"
+#     >>> turist(10, 50, 22)
+#     "-RACUN---0000010\nCena: 50 EUR\nDDV: 11\nSkupno: 61\nHvala za obisk"
 # =============================================================================
-def izbrisi_podvojene(niz, znak=None):
-    if niz == "":
-        return ""
-    elif len(niz) >= 2 and niz[0] == niz[1]:
-        return izbrisi_podvojene(niz[2:], niz[0])
-    elif niz[0] == znak:
-        return izbrisi_podvojene(niz[1:])
+def turist(racun, cena, davek):
+    skupno = int(cena + (cena * (davek / 100)))
+    st_racuna = f"{racun}"
+    while len(st_racuna) < 7:
+        st_racuna = "0" + st_racuna
+    stopnja_davka = 0
+    if cena == 50:
+        stopnja_davka = 11
     else:
-        return niz[0] + izbrisi_podvojene(niz[1:])
-
-# =====================================================================@027487=
-# 4. podnaloga
-# Sestavite funkcijo `vsak_k_ti`, ki sprejme niz in parameter `k` ter vrne nov
-# niz, kjer iz vhodnega niza vzame vsak `k`-ti znak. Za nesmiselne parametre
-# naj funkcija vrne prazen niz
-# 
-#     >>> vsak_k_ti("abcdefghijk", 3)
-#     "adgj"
-#     >>> vsak_k_ti("abcdefghijk", 0)
-#     ""
-# =============================================================================
-def vsak_k_ti(niz, k):
-    i = 0
-    if k == 0:
-        return ""
-    elif k > len(niz):
-        return niz
-    else:
-        return niz[0] + niz[k] + niz[niz, k * ]
-# =====================================================================@027488=
-# 5. podnaloga
-# Sestavitev funkcijo `zaporedje`, ki sprejme niz in vrne nov niz sestavljen iz
-# znakov na indeksih 0, 1, 3, 6, 10, ...
-# Namig: Ali razlike med indeksi sledijo kakemu preprostemu zaporedju?
-# 
-#     >>> zaporedje("0123456789X")
-#     "0136X"
-# =============================================================================
-
+        stopnja_davka = 22
+    return f"-RACUN---{st_racuna}\nCena: {cena} EUR\nDDV: {stopnja_davka}\nSkupno: {skupno}\nHvala za obisk"
 
 
 
@@ -207,7 +187,6 @@ import urllib.error
 import urllib.request
 import io
 from contextlib import contextmanager
-import string
 
 
 class VisibleStringIO(io.StringIO):
@@ -706,13 +685,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4NiwidXNlciI6MTA3MzB9:1ts1DM:Cx6IBuxjhetbWBKT06dRAt1MdK2Ybp0OQ5_1K3Ib5AE"
+        ] = "eyJwYXJ0IjoyNzQ5MywidXNlciI6MTA3MzB9:1tvKJx:k9pzi1sK9njRJwRmGs194tsPaXnOvWx13NM2Zmn-U3E"
         try:
-            Check.equal('filtriraj("Ne gremo še domov", "ngm")', "N__g__m_______m__")
-            Check.secret(filtriraj("Planica!! planica!!, snežena kraljica", "Planica!"))
-            
-            # =============================================================================
-            # Nizi
+            Check.equal('pozdrav("matja", "pretnar")', "Lep pozdrav! Matja Pretnar.")
+            Check.equal('pozdrav("imaM več imen", "In en sam priimek")', "Lep pozdrav! Imam Več Imen In En Sam Priimek.")
+            Check.secret(pozdrav("Dolllllgo ime in", "brez priimka"))
+            Check.secret(pozdrav("", "Veeeeč SDDDASDCa fffS"))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -724,17 +702,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ5MCwidXNlciI6MTA3MzB9:1ts1DM:4egNX7rzjaBuCkydncqpLCWYAEKxL6Z94XHfLlVB_qo"
+        ] = "eyJwYXJ0IjoyNzQ5NCwidXNlciI6MTA3MzB9:1tvKJx:spt_qKgP6ezpNUNTy9IK-Y7lAs5wJXSZn4rjzR9E2Pk"
         try:
-            Check.equal('pretvori("10001", 2)', 17)
-            Check.equal('pretvori("2ACBD04", 36)', 4978911892)
-            Check.equal('pretvori("AB", 30)', 311)
-            Check.equal('pretvori("101", 30)', 901)
-            for b in range(3, 36 + 1):
-                Check.secret(pretvori("101010111101", b))
-            for b in range(30, 36 + 1):
-                Check.secret(pretvori("PLANICA", b))
-                Check.secret(pretvori("MIHEC01267", b))
+            Check.equal('zmnozi(12.345678, 13.56789098765456789)', "167.5048133")
+            Check.equal('zmnozi(12.3456789123, 100000)', "1234567.8912300")
+            Check.secret(zmnozi(16789.3162789, 100.3))
+            Check.secret(zmnozi(16789.33162789, 0.333))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -746,49 +719,14 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoyNzQ4OSwidXNlciI6MTA3MzB9:1ts1DM:H8tpfGvPN-t6HzX1br76EM8yK3nCkWoqVwwbT_4h0qs"
+        ] = "eyJwYXJ0IjoyNzQ5NSwidXNlciI6MTA3MzB9:1tvKJx:pOZBZLGljuaJnOV8ORCRkLOc-L1eoD_Mo7B1SuthVm8"
         try:
-            Check.equal('izbrisi_podvojene("abaab")', "abb")
-            Check.equal('izbrisi_podvojene("abab")', "abab")
-            Check.equal('izbrisi_podvojene("aaaabaaaa")', "b")
-            Check.secret(izbrisi_podvojene("10000010001010101010002"))
-            Check.secret(izbrisi_podvojene("10000010sxsXXXs01010101010002"))
-            Check.secret(izbrisi_podvojene("asdhaskbbbsna,,sjnansd"))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4NywidXNlciI6MTA3MzB9:1ts1DM:PNpfpKe5Ged8m8m3lgvdFpLc4tuktINfuEQMkXovSLc"
-        try:
-            Check.equal('vsak_k_ti("abcdefghijk", 0)', "")
-            Check.equal('vsak_k_ti("abcdefghijk", 3)', "adgj")
-            Check.secret(vsak_k_ti("abcdefghijk", 5))
-            Check.secret(vsak_k_ti("abcdefghijk", -3))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 5))
-            Check.secret(vsak_k_ti("abcdefghihvjdksa s asčdhaglsda saasč jk", 8))
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoyNzQ4OCwidXNlciI6MTA3MzB9:1ts1DM:FhiE9ngjFbE5C4UvfTHrdYeHQO8ubiEdvXPjK-1muPA"
-        try:
-            Check.equal('zaporedje("0123456789X")', "0136X")
-            Check.secret(zaporedje("".join([str(x) for x in range(100)])))
-            Check.secret(zaporedje("".join([str(x) for x in range(150)])))
+            Check.equal('turist(10, 100, 22)',
+                        "-RACUN---0000010\nCena: 100 EUR\nDDV: 22\nSkupno: 122\nHvala za obisk")
+            Check.equal('turist(10, 50, 22)',
+                        "-RACUN---0000010\nCena: 50 EUR\nDDV: 11\nSkupno: 61\nHvala za obisk")
+            Check.secret(turist(1234, 10, 1234))
+            Check.secret(turist(12, 1000, 1234))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -827,7 +765,5 @@ def _validate_current_file():
     Check.summarize()
 
 
-if __name__ == "__main__":
-    _validate_current_file()
 if __name__ == "__main__":
     _validate_current_file()
