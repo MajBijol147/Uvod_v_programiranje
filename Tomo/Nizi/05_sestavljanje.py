@@ -67,7 +67,11 @@ def turist(racun, cena, davek):
         stopnja_davka = 11
     else:
         stopnja_davka = 22
-    return f"-RACUN---{st_racuna}\nCena: {cena} EUR\nDDV: {stopnja_davka}\nSkupno: {skupno}\nHvala za obisk"
+    return  f"-RACUN---{st_racuna}\n" \
+            f"Cena: {cena} EUR\n" \
+            f"DDV: {round(cena*davek/100)}\n" \
+            f"Skupno: {skupno}\n" \
+            f"Hvala za obisk"
 
 
 

@@ -32,7 +32,12 @@ def gcd(a, b):
 # =============================================================================
 class Ulomek:
     def __init__(self, st, im):
-        
+        if gcd(st, im) != 1:
+            self.st = st // gcd(st, im)
+            self.im = im // gcd(st, im)
+        else:
+            self.st = st // gcd(st, im)
+            self.im = im // gcd(st, im)
 # =====================================================================@001733=
 # 3. podnaloga
 # Definirajte metodo  `__str__`, ki predstavi ulomek z nizom
@@ -42,7 +47,8 @@ class Ulomek:
 #     >>> print(u)
 #     1/4
 # =============================================================================
-
+    def __str__(self):
+        return f"{self.st}/{self.im}"
 # =====================================================================@001734=
 # 4. podnaloga
 # Definirajte še metodo  `__repr__`, ki predstavi ulomek z nizom
@@ -52,7 +58,8 @@ class Ulomek:
 #     >>> u
 #     Ulomek(1, 4)
 # =============================================================================
-
+    def __repr__(self):
+        return f"Ulomek({self.st}, {self.im})"
 # =====================================================================@001735=
 # 5. podnaloga
 # Definirajte metodo  `__eq__(self, other)`, ki vrne `True` če sta dva
@@ -63,7 +70,11 @@ class Ulomek:
 #     >>> Ulomek(2, 3) == Ulomek(10, 15)
 #     True
 # =============================================================================
-
+    def __eq__(self, other):
+        if (self.st * other.im) == (self.im * other.st):
+            return True
+        else:
+            return False
 # =====================================================================@001736=
 # 6. podnaloga
 # Definirajte metodo  `__add__(self, other)`, ki vrne vsoto dveh ulomkov.
@@ -73,7 +84,8 @@ class Ulomek:
 #     >>> Ulomek(1, 6) + Ulomek(1, 4)
 #     Ulomek(5, 12)
 # =============================================================================
-
+    def __add__(self, other):
+        return Ulomek(self.st * other.im + other.st * self.im, self.im * other.im)
 # =====================================================================@001737=
 # 7. podnaloga
 # Definirajte metodo  `__sub__`, ki vrne razliko dveh ulomkov.
@@ -83,7 +95,8 @@ class Ulomek:
 #     >>> Ulomek(1, 4) - Ulomek(1, 6)
 #     Ulomek(1, 12)
 # =============================================================================
-
+    def __sub__(self, other):
+        
 # =====================================================================@001738=
 # 8. podnaloga
 # Definirajte metodo  `__mul__`, ki vrne zmnožek dveh ulomkov.

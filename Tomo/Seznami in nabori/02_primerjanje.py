@@ -31,7 +31,15 @@ def vecji_element(seznam, stevilo):
 #     >>> prvi_najvecji([8, 7, 5, 1])
 #     True
 # =============================================================================
-
+def prvi_najvecji(sez):
+    rezultat = set()
+    for el in sez:
+        rezultat.add(sez[0] >= el)
+    if False in rezultat:
+        return False
+    else:
+        return True
+            
 # =====================================================================@013132=
 # 3. podnaloga
 # Definirajte funkcijo `vsi_vecji(sez1, sez2)`, ki sprejme dva seznama, `sez1`
@@ -43,7 +51,14 @@ def vecji_element(seznam, stevilo):
 #     >>> vsi_vecji([5, 8], [1, 2, 4])
 #     True
 # =============================================================================
-
+def vsi_vecji(sez1, sez2):
+    rezultat = set()
+    for st in sez1:
+        rezultat.add(not vecji_element(sez2, st))
+    if False in rezultat:
+        return False
+    else:
+        return True
 
 
 
