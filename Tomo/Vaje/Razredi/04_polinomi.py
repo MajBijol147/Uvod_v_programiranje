@@ -1,132 +1,186 @@
 # =============================================================================
-# Ulomki
-# =====================================================================@001731=
+# Polinomi
+#
+# Definirajte razred `Polinom`, s katerim predstavimo polinom v
+# spremenljivki $x$. Polinom predstavimo s seznamom njegovih koeficientov,
+# kjer je $k$-ti element seznama koeficient pri $x^k$.
+# 
+# Na primer, polinom $x^3 + 2x + 7$ predstavimo s `Polinom([7, 2, 0, 1])`.
+# Razmislite, kaj predstavlja `Polinom([])`. Zadnji koeficient v seznamu
+# mora biti neničelen.
+# =====================================================================@001741=
 # 1. podnaloga
-# Izven razreda sestavite funkcijo `gcd(m, n)`, ki izračuna največji skupni
-# delitelj števil `m` in `n`. Zgled:
+# Sestavite konstruktor `__init__(self, koef)`, ki nastavi objektu
+# nastavi atribut `koef` (koeficienti polinoma). Zgled:
 # 
-#     >>> gcd(35, 63)
-#     7
+#     >>> p = Polinom([7, 2, 0, 1])
+#     >>> p.koef
+#     [7, 2, 0, 1]
+# 
+# _Pozor_: Če kasneje spremenimo seznam, ki smo ga kot argument podali
+# konstruktorju, se koeficienti polinoma ne smejo premeniti. Seznama,
+# ki smo ga podali kot argument, konstruktor prav tako ne sme spremeninjati.
+# Zgled:
+# 
+#     >>> l = [2, 0, 1]
+#     >>> p = Polinom(l)
+#     >>> l.append(3)
+#     >>> p.koef
+#     [2, 0, 1]
 # =============================================================================
-def gcd(a, b):
-    if b == 0:
-        return a
-    else:
-        while b != 0:
-            a, b = b, a % b
-        return a
-# =====================================================================@001732=
+class Polinom:
+    def __init__(self, koef):
+        zadnji = len(koef)
+        while zadnji > 0 and koef[zadnji - 1] == 0:
+            zadnji -= 1 
+        self.koef = koef[:zadnji]
+    
+# =====================================================================@001742=
 # 2. podnaloga
-# Definirajte razred `Ulomek`, s katerim predstavimo ulomek. Števec in
-# imenovalec sta celi števili, pri čemer je morebiten negativen predznak
-# vedno v števcu. Ulomki naj bodo vedno okrajšani. Atributa naj se
-# imenujeta `st` in `im`.
+# Sestavite metodo `stopnja`, ki vrne stopnjo polinoma. Zgled:
 # 
-# Najprej definirajte konstruktor `__init__(self, st, im)`. Zgled:
+#     >>> p = Polinom([7, 2, 0, 1])
+#     >>> p.stopnja()
+#     3
 # 
-#     >>> u = Ulomek(5, 20)
-#     >>> u.st
-#     1
-#     >>> u.im
-#     4
+# _Opomba_: Za razpravo glede stopnje ničelnega polinoma glejte [članek
+# na Wikipediji](http://en.wikipedia.org/wiki/Degree_of_a_polynomial#Degree_of_the_zero_polynomial).
 # =============================================================================
-class Ulomek:
-    def __init__(self, st, im):
-        if gcd(st, im) != 1:
-            self.st = st // gcd(st, im)
-            self.im = im // gcd(st, im)
+    def stopnja(self):
+        if len(self.koef) != 0:
+            return len(self.koef) - 1
         else:
-            self.st = st // gcd(st, im)
-            self.im = im // gcd(st, im)
-# =====================================================================@001733=
+            return float('-inf')
+# =====================================================================@001743=
 # 3. podnaloga
-# Definirajte metodo  `__str__`, ki predstavi ulomek z nizom
-# oblike `'st/im'`. Zgled:
+# Sestavite metodo `__repr__`, ki vrne niz oblike
+# `'Polinom([a_0, …, a_n])'`, kjer so `a_0, …, a_n` koeficienti polinoma.
+# Zgled:
 # 
-#     >>> u = Ulomek(5, 20)
-#     >>> print(u)
-#     1/4
-# =============================================================================
-    def __str__(self):
-        return f"{self.st}/{self.im}"
-# =====================================================================@001734=
-# 4. podnaloga
-# Definirajte še metodo  `__repr__`, ki predstavi ulomek z nizom
-# oblike `'Ulomek(st, im)'`. Zgled:
-# 
-#     >>> u = Ulomek(5, 20)
-#     >>> u
-#     Ulomek(1, 4)
+#     >>> p = Polinom([5, 0, 1])
+#     >>> p
+#     Polinom([5, 0, 1])
 # =============================================================================
     def __repr__(self):
-        return f"Ulomek({self.st}, {self.im})"
-# =====================================================================@001735=
-# 5. podnaloga
-# Definirajte metodo  `__eq__(self, other)`, ki vrne `True` če sta dva
-# ulomka enaka, in `False` sicer. Zgled:
+        return f"Polinom({self.koef})"
+# =====================================================================@001744=
+# 4. podnaloga
+# Sestavite metodo `__eq__(self, other)` za primerjanje polinomov. Zgled:
 # 
-#     >>> Ulomek(1, 3) == Ulomek(2, 3)
+#     >>> Polinom([3, 2, 0, 1]) == Polinom([3, 2])
 #     False
-#     >>> Ulomek(2, 3) == Ulomek(10, 15)
+#     >>> Polinom([3, 2, 1, 0]) == Polinom([3, 2, 1])
 #     True
 # =============================================================================
     def __eq__(self, other):
-        if (self.st * other.im) == (self.im * other.st):
-            return True
-        else:
-            return False
-# =====================================================================@001736=
-# 6. podnaloga
-# Definirajte metodo  `__add__(self, other)`, ki vrne vsoto dveh ulomkov.
-# Ko definirate to metodo, lahko ulomke seštevate kar z operatorjem `+`.
-# Na primer:
+        return self.koef == other.koef
+# =====================================================================@001745=
+# 5. podnaloga
+# Sestavite metodo `__call__(self, x)`, ki izračuna in vrne vrednost
+# polinoma v `x`. Pri izračunu vrednosti uporabite Hornerjev algoritem.
+# Če definiramo metodo `__call__`, objekt postane "klicljiv" (tj. lahko
+# ga kličemo, kakor da bi bil funkcija). Zgled:
 # 
-#     >>> Ulomek(1, 6) + Ulomek(1, 4)
-#     Ulomek(5, 12)
+#     >>> p = Polinom([3, 2, 0, 1])
+#     >>> p(1)
+#     6
+#     >>> p(-3)
+#     -30
+#     >>> p(0.725)
+#     4.8310781249999994
+# =============================================================================
+    def __call__(self, x):
+        result = 0  
+        for i in reversed(self.koef):
+            result = result * x + i
+        return result
+# =====================================================================@001746=
+# 6. podnaloga
+# Sestavite metodo `__add__(self, other)` za seštevanje polinomov. Metoda
+# naj sestavi in vrne nov objekt razreda `Polinom`, ki bo vsota polinomov
+# `self` in `other`. Zgled:
+# 
+#     >>> Polinom([1, 0, 1]) + Polinom([4, 2])
+#     Polinom([5, 2, 1])
+# 
+# _Pozor_: Pri seštevanju se lahko zgodi, da se nekateri koeficienti
+# pokrajšajo: $(x^3 + 2x + 7) + (-x^3 - 2x + 10) = 17$.
 # =============================================================================
     def __add__(self, other):
-        return Ulomek(self.st * other.im + other.st * self.im, self.im * other.im)
-# =====================================================================@001737=
-# 7. podnaloga
-# Definirajte metodo  `__sub__`, ki vrne razliko dveh ulomkov.
-# Ko definirate to metodo, lahko ulomke odštevate kar z operatorjem `-`.
-# Na primer:
-# 
-#     >>> Ulomek(1, 4) - Ulomek(1, 6)
-#     Ulomek(1, 12)
-# =============================================================================
-    def __sub__(self, other):
+        i = 0
+        nov_koef = []
+        while i < max(len(self.koef), len(other.koef)):
+            koef = 0
+            if i < len(self.koef):
+                koef += self.koef[i]
+            if i < len(other.koef):
+                koef += other.koef[i]
+            nov_koef.append(koef)
+            i += 1
+        return Polinom(nov_koef)
         
-# =====================================================================@001738=
+# =====================================================================@001747=
+# 7. podnaloga
+# Sestavite metodo `__mul__` za množenje polinomov. Metoda
+# naj sestavi in vrne nov objekt razreda `Polinom`, ki bo produkt polinomov.
+# Zgled:
+# 
+#     >>> Polinom([1, 0, 1]) * Polinom([4, 2])
+#     Polinom([4, 2, 4, 2])
+# =============================================================================
+
+# =====================================================================@001748=
 # 8. podnaloga
-# Definirajte metodo  `__mul__`, ki vrne zmnožek dveh ulomkov.
-# Ko definirate to metodo, lahko ulomke množite kar z operatorjem `*`.
-# Na primer:
+# Sestavite metodo `odvod(self, k)`, sestavi in vrne nov polinom, ki bo
+# $k$-ti odvod polinoma `self`. Argument `k` naj ima privzeto vrednost 1.
+# Zgled:
 # 
-#     >>> Ulomek(1, 3) * Ulomek(1, 2)
-#     Ulomek(1, 6)
+#     >>> p = Polinom([5, 1, 4, -3, 5, -1])
+#     >>> p.odvod()
+#     Polinom([1, 8, -9, 20, -5])
+#     >>> p.odvod(2)
+#     Polinom([8, -18, 60, -20])
 # =============================================================================
 
-# =====================================================================@001739=
+# =====================================================================@001749=
 # 9. podnaloga
-# Definirajte metodo  `__truediv__`, ki vrne kvocient dveh
-# ulomkov. Ko definirate to metodo, lahko ulomke delite kar z operatorjem
-# `/`. Na primer:
+# Sestavite metodo `__str__`, ki predstavi polinom v čitljivi obliki,
+# kot kaže primer:
 # 
-#     >>> Ulomek(1, 6) / Ulomek(1, 4)
-#     Ulomek(2, 3)
+#     >>> p = Polinom([5, 1, 4, -3, 5, -1])
+#     -x^5 + 5x^4 - 3x^3 + 4x^2 + x + 5
+# 
+# Za niz, ki ga funkcija vrne, naj velja naslednje:
+# 
+# * Polinom je sestavljen iz monomov oblike `ax^k`, kjer je `a` ustrezen
+#   koeficient.
+# * Monomi so med seboj povezani z znaki `+`; pred in za plusom je po en
+#   presledek.
+# * Namesto `x^1` bomo pisali samo `x`, `x^0` pa bomo izpustili in pisali
+#   samo koeficient.
+# * Če je koeficient 1, bomo namesto `1x^k` pisali `x^k`. Če je -1, bomo
+#   namesto `-1x^k` pisali `-x^k`. To ne velja za prosti člen.
+# * Če je koeficient negativen, bomo pri združevanju monomov uporabili
+#   znak `-` namesto znaka `+`. Torej, namesto `ax^m + -bx^n` bomo pisali
+#   `ax^m - bx^n`. To ne velja za vodilni člen.
+# * Če je koeficient 0, bomo monom izpustili. To pravilo ne velja za
+#   ničelni polinom.
 # =============================================================================
 
-# =====================================================================@001740=
+# =====================================================================@027731=
 # 10. podnaloga
-# Izven razreda `Ulomek` definirajte funkcijo `priblizek(n)`, ki vrne
-# vsoto $$\frac{1}{0!} + \frac{1}{1!} + \frac{1}{2!} + … + \frac{1}{n!}.$$
-# Funkcija naj uporablja razred `Ulomek`. Zgled:
+# Sestavite metodi `__iter__` in `__next__`, ki bosta omogočili, da se po 
+# neničelnih koeficientih polinoma sprehodimo kar s `for` zanko. Metodi naj 
+# delujeta tako, da bomo ob sprehodu s for zanko dobili pare 
+# `(koeficient, eksponent)` padajoče glede na eksponent in brez neničelnih 
+# eksponentov. 
 # 
-#     >>> priblizek(5)
-#     Ulomek(163, 60)
+# Lahko predpostavite, da se po polinomu nikoli ne bomo sprehajali v gnezdeni 
+# zanki.
 # 
-# Ali je izračunana vrednost blizu števila $e$?
+#     >>> p = Polinom([5, 1, 4, -3, 5, 0, -1])
+#     >>> list(p)
+#     >>> [(-1, 6), (5, 4), (-3, 3), (4, 2), (1, 1), (5, 0)]
 # =============================================================================
 
 
@@ -746,14 +800,62 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNzMxLCJ1c2VyIjoxMDczMH0:1u4g4f:uhshOXg7uBm-JeTWklV0d4yQfqmKhD_c6KpCKbhB-gI"
+        ] = "eyJwYXJ0IjoxNzQxLCJ1c2VyIjoxMDczMH0:1u77vf:3q8-fnk2YHiMq-5BO5TdjuTIfkmrJXL0R1BE5aOIdRM"
         try:
             test_data = [
-                ('gcd(63, 35)', 7),
-                ('gcd(40, 35)', 5),
-                ('gcd(40, 19)', 1),
-                ('gcd(15, 69)', 3),
-                ('gcd(12345, 6789)', 3),
+                ('Polinom([1, 2, 3]).koef', [1, 2, 3]),
+                ('Polinom([1, 2, 0, 0]).koef', [1, 2]),
+                ('Polinom([0, 0, 0, 0]).koef', []),
+                ('Polinom([0, 0, 0, 0, 0, 0, 0, 7]).koef', [0, 0, 0, 0, 0, 0, 0, 7]),
+            ]
+            additional_tests = [
+                (["l = [1, 2, 3, 0, 0, 0]",
+                  "p = Polinom(l)",
+                  "k = p.koef"],
+                 {'l': [1, 2, 3, 0, 0, 0],
+                  'k': [1, 2, 3]}),
+                (["l = [1, 2, 3, 0, 0, 0]",
+                  "p = Polinom(l)",
+                  "l.extend([13, 14, 15])",
+                  "k = p.koef"],
+                 {'l': [1, 2, 3, 0, 0, 0, 13, 14, 15],
+                  'k': [1, 2, 3]}),
+                (["l = [1, 2, 3]",
+                  "p = Polinom(l)",
+                  "del l[-1]",
+                  "del l[-1]", 
+                  "k = p.koef"],
+                 {'l': [1],
+                  'k': [1, 2, 3]}),
+            ]
+            vse_ok = True
+            for td in test_data:
+                if not Check.equal(*td):
+                    vse_ok = False
+                    break
+            if vse_ok:
+                for td in additional_tests:
+                    if Check.run(*td):
+                        break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzQyLCJ1c2VyIjoxMDczMH0:1u77vf:4_vSwX-OkTKpZlt5Zk70sBENZ6-B5UP98IQY9vSY1AY"
+        try:
+            test_data = [
+                ('Polinom([7, 2, 0, 1]).stopnja()', 3),
+                ('Polinom([1, 2, 3]).stopnja()', 2),
+                ('Polinom([1, 2, 3, 4, 5, 13, -22]).stopnja()', 6),
+                ('Polinom([1]).stopnja()', 0),
+                ('Polinom([]).stopnja()', float('-inf')),
             ]
             for td in test_data:
                 if not Check.equal(*td):
@@ -769,27 +871,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNzMyLCJ1c2VyIjoxMDczMH0:1u4g4f:ojLB4RbPLkp2L4D6cv0UpU2r1cQjjerz4uNZZx82qcA"
+        ] = "eyJwYXJ0IjoxNzQzLCJ1c2VyIjoxMDczMH0:1u77vf:kJQS-XlK1vV0DDMEzG8OsqNkF2GwaO_sWU-piBs5Wg8"
         try:
             test_data = [
-                ('Ulomek(5, 1).st', 5),
-                ('Ulomek(5, 1).im', 1),
-                ('Ulomek(5, 20).st', 1),
-                ('Ulomek(5, 20).im', 4),
-                ('Ulomek(20, 6).st', 10),
-                ('Ulomek(20, 6).im', 3),
-                ('Ulomek(5, 7).st', 5),
-                ('Ulomek(5, 7).im', 7),
-                ('Ulomek(7, 5).st', 7),
-                ('Ulomek(7, 5).im', 5),
-                ('Ulomek(-7, 5).st', -7),
-                ('Ulomek(-7, 5).im', 5),
-                ('Ulomek(-7, -5).st', 7),
-                ('Ulomek(-7, -5).im', 5),
-                ('Ulomek(0, 7).st', 0),
-                ('Ulomek(0, 7).im', 1),
-                ('Ulomek(40, -60).im', 3),
-                ('Ulomek(40, -60).st', -2),
+                ('repr(Polinom([1, 2, 3]))', "Polinom([1, 2, 3])"),
+                ('repr(Polinom([1, 2, 3, 0, 0]))', "Polinom([1, 2, 3])"),
+                ('repr(Polinom([]))', "Polinom([])"),
+                ('repr(Polinom([0, 0]))', "Polinom([])"),
+                ('repr(Polinom([1, 3]))', "Polinom([1, 3])"),
+                ('repr(Polinom([7]))', "Polinom([7])"),
+                ('repr(Polinom([1, -2, 3, -1]))', "Polinom([1, -2, 3, -1])"),
+                ('repr(Polinom([1, 0, 0, -1]))', "Polinom([1, 0, 0, -1])"),
+                ('repr(Polinom([0, 0, 0, -5]))', "Polinom([0, 0, 0, -5])"),
+                ('repr(Polinom([-1, 2, -3, 1]))', "Polinom([-1, 2, -3, 1])"),
             ]
             for td in test_data:
                 if not Check.equal(*td):
@@ -805,18 +899,16 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNzMzLCJ1c2VyIjoxMDczMH0:1u4g4f:GQNAtQSwZmNSM7hZ1mFnJJlLxVu6B0BRDtegAu6Tbv8"
+        ] = "eyJwYXJ0IjoxNzQ0LCJ1c2VyIjoxMDczMH0:1u77vf:Zg7BIT4S6Qep5U5__k0V_A-hhiW2W2gVCckwvQSfSKw"
         try:
             test_data = [
-                ('str(Ulomek(20, 6))', '10/3'),
-                ('str(Ulomek(0, 113))', '0/1'),
-                ('str(Ulomek(40, -60))', '-2/3'),
-                ('str(Ulomek(5, 20))', '1/4'),
-                ('str(Ulomek(5, 7))', '5/7'),
-                ('str(Ulomek(7, 5))', '7/5'),
-                ('str(Ulomek(-7, 5))', '-7/5'),
-                ('str(Ulomek(7, -5))', '-7/5'),
-                ('str(Ulomek(-7, -5))', '7/5'),
+                ('Polinom([1, 2, 3]) == Polinom([1, 2, 3, 0, 0])', True),
+                ('Polinom([3, 2, 1, 0]) == Polinom([3, 2])', False),
+                ('Polinom([3, 2, 1, 0]) == Polinom([3, 2, 1])', True),
+                ('Polinom([1, 2, 3]) != Polinom([0, 1, 2, 3])', True),
+                ('Polinom([1, 2, 3]) == Polinom([3, 2, 1])', False),
+                ('Polinom([]) == Polinom([3, 2, 1])', False),
+                ('Polinom([]) == Polinom([0])', True),
             ]
             for td in test_data:
                 if not Check.equal(*td):
@@ -832,18 +924,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNzM0LCJ1c2VyIjoxMDczMH0:1u4g4f:oz_OEaxs-UgYppaDSagmUPAZS41n3n0Q6TXcPDj6CDA"
+        ] = "eyJwYXJ0IjoxNzQ1LCJ1c2VyIjoxMDczMH0:1u77vf:YWdY2ygz1TeIP7umr7a_cR1Se2IPjH9X0PKjqXqv1lc"
         try:
             test_data = [
-                ('repr(Ulomek(20, 6))', 'Ulomek(10, 3)'),
-                ('repr(Ulomek(0, 226))', 'Ulomek(0, 1)'),
-                ('repr(Ulomek(40, -60))', 'Ulomek(-2, 3)'),
-                ('repr(Ulomek(5, 20))', 'Ulomek(1, 4)'),
-                ('repr(Ulomek(5, 7))', 'Ulomek(5, 7)'),
-                ('repr(Ulomek(7, 5))', 'Ulomek(7, 5)'),
-                ('repr(Ulomek(-7, 5))', 'Ulomek(-7, 5)'),
-                ('repr(Ulomek(7, -5))', 'Ulomek(-7, 5)'),
-                ('repr(Ulomek(-7, -5))', 'Ulomek(7, 5)'),
+                ('Polinom([3, 2, 0, 1])(1)', 6),
+                ('Polinom([1, 1, 1, 1, 1, 1, 1, 1, 1])(0)', 1),
+                ('Polinom([1, 1, 1, 1, 1, 1, 1, 1, 1])(1)', 9),
+                ('Polinom([1, 1, 1, 1, 1, 1, 1, 1, 1])(3)', 9841),
+                ('Polinom([3, 2, 0, 1])(-3)', -30),
+                ('Polinom([3, 2, 0, 1])(0.725)', 4.8310781249999994),
+                ('Polinom([])(1337)', 0),
+                ('Polinom([])(-666)', 0),
             ]
             for td in test_data:
                 if not Check.equal(*td):
@@ -859,25 +950,108 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNzM1LCJ1c2VyIjoxMDczMH0:1u4g4f:Mra1Vli1jYAe9GB3IwOwXgjyfXU7T1Z7dbr6Mcz3_Xw"
+        ] = "eyJwYXJ0IjoxNzQ2LCJ1c2VyIjoxMDczMH0:1u77vf:GAw0ALrJIuNfKRG4IanqCeCTPRFC-SAZAKdGjAdiXsc"
         try:
             test_data = [
-                ('Ulomek(1, 3) == Ulomek(2, 3)', False),
-                ('Ulomek(2, 3) == Ulomek(10, 15)', True),
-                ('Ulomek(0, 3) == Ulomek(0, 2215)', True),
-                ('Ulomek(20, 6) == Ulomek(10, 3)', True),
-                ('Ulomek(-10, 3) == Ulomek(10, 3)', False),
-                ('Ulomek(10, -3) == Ulomek(10, 3)', False),
-                ('Ulomek(1, 4) == Ulomek(4, 1)', False),
-                ('Ulomek(20, 6) == Ulomek(10, 3)', True),
-                ('Ulomek(40, -60) == Ulomek(-2, 3)', True),
-                ('Ulomek(5, 20) == Ulomek(1, 4)', True),
-                ('Ulomek(5, 7) == Ulomek(5, 7)', True),
-                ('Ulomek(7, 5) == Ulomek(7, 5)', True),
-                ('Ulomek(-7, 5) == Ulomek(-7, 5)', True),
-                ('Ulomek(7, -5) == Ulomek(-7, 5)', True),
-                ('Ulomek(-7, -5) == Ulomek(7, 5)', True),
-                ('Ulomek(999999999, 1000000000) == Ulomek(999999998, 999999999)', False),
+                ('Polinom([1, 2, 3, 0, 0, 0, 0, 7]) + Polinom([4, 5])', Polinom([5, 7, 3, 0, 0, 0, 0, 7])),
+                ('Polinom([1, 2, 3]) + Polinom([4, 5, 0, 0, 0, 0, 0, 0, -1])', Polinom([5, 7, 3, 0, 0, 0, 0, 0, -1])),
+                ('Polinom([1, 2, 3]) + Polinom([4, 5])', Polinom([5, 7, 3])),
+                ('Polinom([1, 0, 1]) + Polinom([4, 2])', Polinom([5, 2, 1])),
+                ('Polinom([1, 2, 3]) + Polinom([-1, -2])', Polinom([0, 0, 3])),
+                ('Polinom([1, 2, 3]) + Polinom([0, 0, -3])', Polinom([1, 2])),
+            ]
+            additional_tests = [
+                (["p = Polinom([1, 2, 3])",
+                  "q = Polinom([1, 2, 3, 4, 5, 6, 7])",
+                  "r = p + q",
+                  "p_koef, q_koef = p.koef, q.koef"],
+                 {'r': Polinom([2, 4, 6, 4, 5, 6, 7]),
+                  'p_koef': [1, 2, 3],
+                  'q_koef': [1, 2, 3, 4, 5, 6, 7]}),
+            ]
+            vse_ok = True
+            for td in test_data:
+                if not Check.equal(*td):
+                    vse_ok = False
+                    break
+            if vse_ok:
+                for td in additional_tests:
+                    if Check.run(*td):
+                        break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzQ3LCJ1c2VyIjoxMDczMH0:1u77vf:jpZQy6lb9isaB7z7VPoGVFPF7DKp_18MO3YSeLn1Ycs"
+        try:
+            test_data = [
+                ('Polinom([1, 0, 1]) * Polinom([4, 2])', Polinom([4, 2, 4, 2])),
+                ('Polinom([0, 0, 0, 0, 0, 0, 1]) * Polinom([0, 0, 0, 0, 0, 0, 1])',
+                 Polinom([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])),
+                ('Polinom([1, 0, 1]) * Polinom([])', Polinom([])),
+                ('Polinom([]) * Polinom([4, 2])', Polinom([])),
+                ('Polinom([]) * Polinom([])', Polinom([])),
+                ('Polinom([1, 2, 3]) * Polinom([2])', Polinom([2, 4, 6])),
+                ('Polinom([1, 2, 1]) * Polinom([1, 1])', Polinom([1, 3, 3, 1])),
+                ('Polinom([1, 2, 1, 3, 1]) * Polinom([1, 1, 5, 4, 3, 1])', Polinom([1, 3, 8, 18, 20, 27, 22, 14, 6, 1])),
+                ('Polinom([1, 2, 3]) * Polinom([0, 0, 0])', Polinom([])),
+            ]
+            additional_tests = [
+                (["p = Polinom([1, 2, 3])",
+                  "q = Polinom([1, 2, 3, 4, 5, 6, 7])",
+                  "r = p * q",
+                  "p_koef, q_koef = p.koef, q.koef"],
+                 {'r': Polinom([1, 4, 10, 16, 22, 28, 34, 32, 21]),
+                  'p_koef': [1, 2, 3],
+                  'q_koef': [1, 2, 3, 4, 5, 6, 7]}),
+            ]
+            vse_ok = True
+            for td in test_data:
+                if not Check.equal(*td):
+                    vse_ok = False
+                    break
+            if vse_ok:
+                for td in additional_tests:
+                    if Check.run(*td):
+                        break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxNzQ4LCJ1c2VyIjoxMDczMH0:1u77vf:JgZi-M0YENshYMoLH29QnzR3ib5MSVvk8CS4BAJ6qEg"
+        try:
+            test_data = [
+                ('Polinom([5, 1, 4, -3, 5, -1]).odvod()', Polinom([1, 8, -9, 20, -5])),
+                ('Polinom([5, 1, 4, -3, 5, -1]).odvod(2)', Polinom([8, -18, 60, -20])),
+                ('Polinom([1, 2, 3]).odvod()', Polinom([2, 6])),
+                ('Polinom([3, 2, 1, 0, 1, 2, 3]).odvod()', Polinom([2, 2, 0, 4, 10, 18])),
+                ('Polinom([0, 0, 0, 0, 0, 0, 0, 0, 1]).odvod()',  Polinom([0, 0, 0, 0, 0, 0, 0, 8])),
+                ('Polinom([5, 4, 3, 2, 1]).odvod()', Polinom([4, 6, 6, 4])),
+                ('Polinom([1]).odvod()', Polinom([])),
+                ('Polinom([]).odvod()', Polinom([])),
+                ('Polinom([5, 4, 3, 2, 1]).odvod(0)', Polinom([5, 4, 3, 2, 1])),
+                ('Polinom([1]).odvod(0)', Polinom([1])),
+                ('Polinom([1, 2, 3]).odvod(2)', Polinom([6])),
+                ('Polinom([3, 2, 1, 0, 1, 2, 3]).odvod(2)', Polinom([2, 0, 12, 40, 90])),
+                ('Polinom([0, 0, 0, 0, 0, 0, 0, 0, 1]).odvod(2)', Polinom([0, 0, 0, 0, 0, 0, 56])),
+                ('Polinom([1, 2, 3]).odvod(3)', Polinom([])),
+                ('Polinom([3, 2, 1, 0, 1, 2, 3]).odvod(3)', Polinom([0, 24, 120, 360])),
+                ('Polinom([0, 0, 0, 0, 0, 0, 0, 0, 1]).odvod(3)', Polinom([0, 0, 0, 0, 0, 336])),
+                ('Polinom([0, 0, 0, 0, 0, 0, 0, 0, 1]).odvod(8)', Polinom([40320])),
             ]
             for td in test_data:
                 if not Check.equal(*td):
@@ -893,20 +1067,22 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNzM2LCJ1c2VyIjoxMDczMH0:1u4g4f:b0BSmmJPnY-JksdzKi9Xz0hEr_9lw9bTtFXWiSdGpbM"
+        ] = "eyJwYXJ0IjoxNzQ5LCJ1c2VyIjoxMDczMH0:1u77vf:L6zhDszMo-56iXMwemNgeA8i0PPSqFxUzWbeHQWoYNo"
         try:
             test_data = [
-                ('Ulomek(1, 6) + Ulomek(1, 4)', Ulomek(5, 12)),
-                ('Ulomek(1, -6) + Ulomek(-1, 4)', Ulomek(-5, 12)),
-                ('Ulomek(1, 6) + Ulomek(-1, 4)', Ulomek(-1, 12)),
-                ('Ulomek(1, -6) + Ulomek(1, 4)', Ulomek(1, 12)),
-                ('Ulomek(1, 6) + Ulomek(1, 6)', Ulomek(1, 3)),
-                ('Ulomek(1, 6) + Ulomek(-1, 6)', Ulomek(0, 1)),
-                ('Ulomek(60, 1) + Ulomek(-1, 60)', Ulomek(3599, 60)),
-                ('Ulomek(1, 2014) + Ulomek(1, 2015)', Ulomek(4029, 4058210)),
-                ('Ulomek(1, 2014) + Ulomek(1, -2015)', Ulomek(1, 4058210)),
-                ('Ulomek(757, 3000) + Ulomek(743, 3000)', Ulomek(1, 2)),
-                ('Ulomek(1009, 2022) + Ulomek(1013, 2022)', Ulomek(1, 1)),
+                ('str(Polinom([1, 2, 3]))', "3x^2 + 2x + 1"),
+                ('str(Polinom([-1, -2, -3]))', "-3x^2 - 2x - 1"),
+                ('str(Polinom([-1, -1, 1]))', "x^2 - x - 1"),
+                ('str(Polinom([1, 1, -1]))', "-x^2 + x + 1"),
+                ('str(Polinom([1, 1, 1, 1, 1, 1, 1, 1]))', 'x^7 + x^6 + x^5 + x^4 + x^3 + x^2 + x + 1'),
+                ('str(Polinom([0, 0, 0, 0, 0, 0, 0, 1]))', 'x^7'),
+                ('str(Polinom([5, 1, 4, -3, 5, -1]))', "-x^5 + 5x^4 - 3x^3 + 4x^2 + x + 5"),
+                ('str(Polinom([1, 3]))', "3x + 1"),
+                ('str(Polinom([1, -2, 3, -1]))', "-x^3 + 3x^2 - 2x + 1"),
+                ('str(Polinom([1, 0, 0, -1]))', "-x^3 + 1"),
+                ('str(Polinom([0, 0, 0, -5]))', "-5x^3"),
+                ('str(Polinom([-1, 2, -3, 1]))', "x^3 - 3x^2 + 2x - 1"),
+                ('str(Polinom([]))', "0"),
             ]
             for td in test_data:
                 if not Check.equal(*td):
@@ -922,103 +1098,23 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNzM3LCJ1c2VyIjoxMDczMH0:1u4g4f:1pry0-cpGGzWAZqGOtBXiq34wg4bMcNZ774TTeWNygk"
+        ] = "eyJwYXJ0IjoyNzczMSwidXNlciI6MTA3MzB9:1u77vf:99tLwIhtHgwoXG9XwDqJDAkCsALhqIdVtgKkZYr_5p8"
         try:
             test_data = [
-                ('Ulomek(1, 6) - Ulomek(1, 4)', Ulomek(-1, 12)),
-                ('Ulomek(1, 4) - Ulomek(1, 6)', Ulomek(1, 12)),
-                ('Ulomek(3, 6) - Ulomek(1, 6)', Ulomek(1, 3)),
-                ('Ulomek(1, -6) - Ulomek(-1, 4)', Ulomek(1, 12)),
-                ('Ulomek(1, 6) - Ulomek(-1, 4)', Ulomek(5, 12)),
-                ('Ulomek(1, -6) - Ulomek(1, 4)', Ulomek(-5, 12)),
-                ('Ulomek(1, 6) - Ulomek(1, 6)', Ulomek(0, 1)),
-                ('Ulomek(1, 6) - Ulomek(-1, 6)', Ulomek(1, 3)),
-                ('Ulomek(60, 1) - Ulomek(-1, 60)', Ulomek(3601, 60)),
-                ('Ulomek(1, 2014) - Ulomek(1, 2015)', Ulomek(1, 4058210)),
-                ('Ulomek(1, 2014) - Ulomek(1, -2015)', Ulomek(4029, 4058210)),
-                ('Ulomek(757, 3000) - Ulomek(743, 3000)', Ulomek(7, 1500)),
-                ('Ulomek(2003, 1980) - Ulomek(1013, 1980)', Ulomek(1, 2)),
-            ]
-            for td in test_data:
-                if not Check.equal(*td):
-                    break
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNzM4LCJ1c2VyIjoxMDczMH0:1u4g4f:ZCbkvDj8cy9c-NJ2afpxzVw-8RZyqJtfZvXFGfCHxJQ"
-        try:
-            test_data = [
-                ('Ulomek(1, 3) * Ulomek(1, 2)', Ulomek(1, 6)),
-                ('Ulomek(1, 6) * Ulomek(1, 4)', Ulomek(1, 24)),
-                ('Ulomek(4, 9) * Ulomek(3, 2)', Ulomek(2, 3)),
-                ('Ulomek(1, -6) * Ulomek(-1, 4)', Ulomek(1, 24)),
-                ('Ulomek(1, 6) * Ulomek(-1, 4)', Ulomek(-1, 24)),
-                ('Ulomek(1, -6) * Ulomek(1, 4)', Ulomek(-1, 24)),
-                ('Ulomek(757, 3000) * Ulomek(743, 3000)', Ulomek(562451, 9000000)),
-                ('Ulomek(60, 1) * Ulomek(-1, 60)', Ulomek(-1, 1)),
-                ('Ulomek(25857, 160930) * Ulomek(277970, 33813)', Ulomek(247, 187)),
-                ('Ulomek(25857, 1) * Ulomek(277970, 1)', Ulomek(7187470290, 1)),
-            ]
-            for td in test_data:
-                if not Check.equal(*td):
-                    break
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNzM5LCJ1c2VyIjoxMDczMH0:1u4g4f:gAD21v0nXnWB4FpseJCdXZVkpA3f941yAmtlHZcmcxI"
-        try:
-            test_data = [
-                ('Ulomek(1, 6) / Ulomek(1, 4)', Ulomek(2, 3)),
-                ('Ulomek(4, 9) / Ulomek(2, 3)', Ulomek(2, 3)),
-                ('Ulomek(1, -6) / Ulomek(-1, 4)', Ulomek(2, 3)),
-                ('Ulomek(1, 6) / Ulomek(-1, 4)', Ulomek(-2, 3)),
-                ('Ulomek(1, -6) / Ulomek(1, 4)', Ulomek(-2, 3)),
-                ('Ulomek(757, 3000) / Ulomek(743, 3000)', Ulomek(757, 743)),
-                ('Ulomek(757, 3000) / Ulomek(3000, 743)', Ulomek(562451, 9000000)),
-                ('Ulomek(60, 1) / Ulomek(-60, 1)', Ulomek(-1, 1)),
-                ('Ulomek(160930, 25857) / Ulomek(277970, 33813)', Ulomek(187, 247)),
-                ('Ulomek(25857, 1) / Ulomek(277970, 1)', Ulomek(25857, 277970)),
-                ('Ulomek(25857, 1) / Ulomek(1, 277970)', Ulomek(7187470290, 1)),
-            ]
-            for td in test_data:
-                if not Check.equal(*td):
-                    break
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNzQwLCJ1c2VyIjoxMDczMH0:1u4g4f:o5uFJMyf1mhhIKYTaJY1r6wyhncsSBiwvOlwJwTnyK0"
-        try:
-            test_data = [
-                ('priblizek(3)', Ulomek(8, 3)),
-                ('priblizek(1)', Ulomek(2, 1)),
-                ('priblizek(0)', Ulomek(1, 1)),
-                ('priblizek(5)', Ulomek(163, 60)),
-                ('priblizek(10)', Ulomek(9864101, 3628800)),
-                ('priblizek(20)', Ulomek(6613313319248080001, 2432902008176640000)),
+                ("list(Polinom([1, 2, 3]))", [(3, 2), (2, 1), (1, 0)]),
+                ("list(Polinom([-1, -2, -3]))", [(-3, 2), (-2, 1), (-1, 0)]),
+                ("list(Polinom([-1, -1, 1]))", [(1, 2), (-1, 1), (-1, 0)]),
+                ("list(Polinom([1, 1, -1]))", [(-1, 2), (1, 1), (1, 0)]),
+                ("list(Polinom([1, 1, 1, 1, 1, 1, 1, 1]))", [(1, 7), (1, 6), (1, 5), (1, 4), (1, 3), (1, 2), (1, 1), (1, 0)]),
+                ("list(Polinom([0, 0, 0, 0, 0, 0, 0, 1]))", [(1, 7)]),
+                ("list(Polinom([5, 1, 4, -3, 5, -1]))", [(-1, 5), (5, 4), (-3, 3), (4, 2), (1, 1), (5, 0)]),
+                ("list(Polinom([1, 3]))", [(3, 1), (1, 0)]),
+                ("list(Polinom([1, -2, 3, -1]))", [(-1, 3), (3, 2), (-2, 1), (1, 0)]),
+                ("list(Polinom([1, 0, 0, -1]))", [(-1, 3), (1, 0)]),
+                ("list(Polinom([0, 0, 0, -5]))", [(-5, 3)]),
+                ("list(Polinom([-1, 2, -3, 1]))", [(1, 3), (-3, 2), (2, 1), (-1, 0)]),
+                ("list(Polinom([1, 0, 0, 2, 0, 0, 0, 3, 4, 0, -4, 0]))", [(-4, 10), (4, 8), (3, 7), (2, 3), (1, 0)]),
+                ("list(Polinom([]))", []),
             ]
             for td in test_data:
                 if not Check.equal(*td):
