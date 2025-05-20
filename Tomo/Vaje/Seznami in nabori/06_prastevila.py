@@ -1,89 +1,40 @@
 # =============================================================================
-# Imena
-#
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
-# 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+# Praštevila
+# =====================================================================@009809=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# Definirajte funkcijo `je_deljivo_s_katerim_od(n, seznam)`, ki vrne `True`
+# natanko tedaj, ko je število `n` deljivo z vsaj kakšnim številom iz seznama
+# števil `seznam`.
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+#     >>> je_deljivo_s_katerim_od(20, [3, 4, 6])
+#     True
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+def je_deljivo_s_katerim_od(x, sez):
+    for st in sez:
+        if x % st == 0:
+            return True
+    else:
+        return False
+# =====================================================================@009810=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Definirajte funkcijo `prastevila_do`, ki vrne seznam vseh praštevil, ki so
+# manjša ali enaka podanemu številu.
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
-# 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> prastevila_do(10)
+#     [2, 3, 5, 7]
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
-# =====================================================================@001512=
+def prastevila_do(M):
+    prastevila = []
+    for x in range(2, M + 1):
+        if je_deljivo_s_katerim_od(x, list(range(2, x))) == False:
+            prastevila.append(x)
+    return prastevila
+# =====================================================================@009811=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
-# 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+# Definirajte funkcijo `je_prastevilo`, ki vrne ali je število praštevilo.
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
-# 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
-# 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
-# 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
-# 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
-# =============================================================================
-
+def je_prastevilo(x):
+    return False if x == 1 else not je_deljivo_s_katerim_od(x, list(range(2, x)))
 
 
 
@@ -701,12 +652,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0Ijo5ODA5LCJ1c2VyIjoxMDczMH0:1uCChX:JyF9gEMYXuZkxu1LK2Ov4p6HJsCbbhBbL91LPh1_dUE"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
+            Check.equal('je_deljivo_s_katerim_od(20, [3, 4, 6])', True)
+            Check.equal('je_deljivo_s_katerim_od(2, [])', False)
+            Check.equal('je_deljivo_s_katerim_od(2, [1])', True)
+            Check.equal('je_deljivo_s_katerim_od(2, [2])', True)
+            Check.equal('je_deljivo_s_katerim_od(10, [2])', True) and \
+                Check.equal('je_deljivo_s_katerim_od(10, [5])', True) and \
+                Check.equal('je_deljivo_s_katerim_od(10, [3])', False) and \
+                Check.equal('je_deljivo_s_katerim_od(20, [4])', True) and \
+                Check.equal('je_deljivo_s_katerim_od(20, [2, 4, 20])', True)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -718,18 +674,13 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
+        ] = "eyJwYXJ0Ijo5ODEwLCJ1c2VyIjoxMDczMH0:1uCChX:P7Ho6M6ymiHehIjKwKLN6jFCYdWl_2qyjkSFkAI8g5Q"
         try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
-            ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
+            Check.equal('prastevila_do(1)', [])
+            Check.equal('prastevila_do(2)', [2])
+            Check.equal('prastevila_do(10)', [2, 3, 5, 7])
+            Check.equal('prastevila_do(20)', [2, 3, 5, 7, 11, 13, 17, 19])
+            Check.equal('prastevila_do(23)', [2, 3, 5, 7, 11, 13, 17, 19, 23])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,47 +692,16 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
+        ] = "eyJwYXJ0Ijo5ODExLCJ1c2VyIjoxMDczMH0:1uCChX:BJz7sCMeJrS8JsJdL6e1VXk032qrWE7pav8uQNVcvNg"
         try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
-                    break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
-        try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            Check.equal('je_prastevilo(1)', False)
+            Check.equal('je_prastevilo(2)', True)
+            Check.equal('je_prastevilo(3)', True)
+            Check.equal('je_prastevilo(4)', False)
+            Check.equal('je_prastevilo(5)', True)
+            Check.equal('je_prastevilo(16)', False) and \
+                Check.equal('je_prastevilo(19)', True) and \
+                Check.equal('je_prastevilo(21)', False)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

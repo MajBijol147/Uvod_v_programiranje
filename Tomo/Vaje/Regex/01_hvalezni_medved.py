@@ -1,90 +1,74 @@
 # =============================================================================
-# Imena
+# Hvaležni medved
 #
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
+# Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+# Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+# prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+# tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+# godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+# zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+# napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+# odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+# medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn."
 # 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+# Povzeto po [github: programiranje1](https://github.com/matijapretnar/programiranje-1/blob/master/01-regularni-izrazi/vaje/hvalezni_medved.py).
+# =====================================================================@033397=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# Sestavite funkcijo `najdi_besede(niz, podniz)`, ki vrne množico besed v
+# besedilu `niz`, ki vsebujejo dani `podniz`.
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+# Namig: pomagajte si z regex znakom za mejo `[\b]`.
+# 
+#     >>> najdi_besede("Naj da denar, preden pojde", "de")
+#     {"denar", "preden", "pojde"}
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+import re
+
+def najdi_besede(niz, podniz):
+    vzorec = r"\b\w*" + podniz + r"\w*\b"
+    return set(re.findall(vzorec, niz))
+        
+# =====================================================================@033399=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Sestavite funkcijo `besede_s_predpono(niz, predpona)`, ki vrne množico
+# vseh besed, ki se pojavijo v nizu in imajo dano predpono.
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
-# 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> besede_s_predpono(hvalezni_medved, 'zi')
+#     {'zibala', 'zibel', 'zibelko'}
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
-# =====================================================================@001512=
+def besede_s_predpono(niz, pred):
+    vzorec = r"\b" + pred + r"\w*"
+    return set(re.findall(vzorec, niz))
+# =====================================================================@033401=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
+# Sestavite funkcijo `besede_s_pripono(niz, pripona)`, ki vrne množico
+# vseh besed, ki se pojavijo v nizu in imajo dano pripono.
 # 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+#     >>> besede_s_pripono(hvalezni_medved, 'la')
+#     {'zibala', 'razveselila', 'prestrašila', 'šivala', 'opazila', 'tla'}
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
+def besede_s_pripono(niz, prip):
+    vzorec = r"\b\w*" + prip + r"\b"
+    return set(re.findall(vzorec, niz))
+# =====================================================================@033400=
 # 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
+# Sestavite funkcijo `dvojne_crke(niz)`, ki vrne množico vseh besed v
+# nizu `niz`, ki vsebujejo kakšno dvojno črko.
 # 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
-# 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
-# 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
+#     >>> dvojne_crke("Res dobra oddaja!")
+#     {"oddaja"}
+#     >>> dvojne_crke("'A volunteer is worth twenty pressed men.'")
+#     {'volunteer', 'pressed'}
+#     >>> dvojne_crke(hvalezni_medved)
+#     {"oddide"}
 # =============================================================================
-
-
+def dvojne_crke(niz):
+    mn = set()
+    vzorec = r"\b\w*(\w)\1\w*\b"
+    for poj in re.finditer(vzorec, niz):
+        mn.add(poj.group())
+    return mn
+    
 
 
 
@@ -701,12 +685,26 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0IjozMzM5NywidXNlciI6MTA3MzB9:1uCHBX:3C76PyyfMnfRtX3tRZUiUOoFCz6-opsGWiPn3gIkbFM"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
+            Check.equal(
+                'najdi_besede("Naj da denar, preden pojde", "de")', {"denar", "preden", "pojde"}
+            )
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal(
+                'najdi_besede(hvalezni_medved, "de")',
+                {"izdere", "debel", "oddide", "začudeno"},
+                env={"hvalezni_medved": hvalezni_medved},
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -718,18 +716,23 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
+        ] = "eyJwYXJ0IjozMzM5OSwidXNlciI6MTA3MzB9:1uCHBX:mlG5Ug0hYMa6bUzmeCK2UziKc07jm0xOS1MjnrIjQGQ"
         try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
-            ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal(
+                'besede_s_predpono(hvalezni_medved, "zi")',
+                {"zibala", "zibel", "zibelko"},
+                env={"hvalezni_medved": hvalezni_medved},
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,21 +744,23 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
+        ] = "eyJwYXJ0IjozMzQwMSwidXNlciI6MTA3MzB9:1uCHBX:SUUETlAAWOdHGweHWrluInSXiLoxYqSGVFrkUOiTUhs"
         try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
-                    break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal(
+                'besede_s_pripono(hvalezni_medved, "la")',
+                {"zibala", "razveselila", "prestrašila", "šivala", "opazila", "tla"},
+                env={"hvalezni_medved": hvalezni_medved},
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -767,21 +772,25 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
+        ] = "eyJwYXJ0IjozMzQwMCwidXNlciI6MTA3MzB9:1uCHBX:Vc8uebeanNp_EcakC-bx6KTOW8wxm_6vt481FO20a4Q"
         try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            hvalezni_medved = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+            Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+            prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
+            tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
+            godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
+            zibel, jo pobaše in oddide. Čez nekaj časa pa ji zopet prinese zibel, a zvhano
+            napolnjeno s sladkimi hruškami. Postavil jo je na tla pred začudeno mater in
+            odracal nazaj v goščavo. "Poglej no", se je razveselila mati, "kakšen hvaležen
+            medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn".
+            """
+            Check.equal('dvojne_crke("Res dobra oddaja!")', {"oddaja"})
+            Check.equal(
+                'dvojne_crke("A volunteer is worth twenty pressed men.")', {"volunteer", "pressed"}
+            )
+            Check.equal(
+                "dvojne_crke(hvalezni_medved)", {"oddide"}, env={"hvalezni_medved": hvalezni_medved}
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

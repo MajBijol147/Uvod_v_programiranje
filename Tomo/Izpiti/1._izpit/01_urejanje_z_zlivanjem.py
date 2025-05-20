@@ -1,91 +1,69 @@
 # =============================================================================
-# Imena
-#
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
-# 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+# Urejanje z zlivanjem
+# =====================================================================@040197=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# Sestavite funkcijo `v_katerem_je_manjsi`, ki kot argumenta prejme dva
+# seznama ter vrne tistega v katerem je prvi element manjši (če sta prva elementa enaka, lahko vrne kateregakoli). Če je en od seznamov
+# prazen, naj funkcija vrne drugega. Predpostavite lahko, da oba seznama hkrati nista
+# prazna.
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+#     >>> v_katerem_je_manjsi([1, 2, 3], [4, 5, 6])
+#     [1, 2, 3]
+#     >>> v_katerem_je_manjsi([1, 2], [])
+#     [1, 2]
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+def v_katerem_je_manjsi(sez1, sez2):
+    if sez1 == []:
+        return sez2
+    elif sez2 == []:
+        return sez1
+    elif sez1[0] < sez2[0]:
+        return sez1
+    elif sez2[0] < sez1[0]:
+        return sez2
+    else:
+        return sez1
+# =====================================================================@040198=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Seznama `a` in `b` zlijemo tako, da ustvarimo nov seznam in ga napolnimo s ponavljem sledečega postopka.  Izberemo element iz tistega seznama, kjer je prvi element manjši, tj., če je prvi element v `a` manjši od prvega v `b` v nov seznam izberemo prvi element iz `a`, sicer pa iz `b`. Izbrani element nato dodamo v nov seznam in ga zavržemo iz seznama, iz katerega izvira. Postopek ponavljamo, dokler ne dodamo vseh elementov iz `a` in `b`.
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
+# Sestavite funkcijo `zlij`, ki zlije seznama, ki ju prejme kot argumenta.
 # 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> zlij([1, 2, 3], [4, 5, 6])
+#     [1, 2, 3, 4, 5, 6]
+#     >>> zlij([1, 3, 5], [2, 4, 6])
+#     [1, 2, 3, 4, 5, 6]
+#     >>> zlij([3], [2, 4, 6])
+#     [2, 3, 4, 6]
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
+def zlij(sez1, sez2):
+    zlitek = []
+    while len(v_katerem_je_manjsi(sez1, sez2)) > 0:
+        zlitek.append(v_katerem_je_manjsi(sez1, sez2)[0])
+        v_katerem_je_manjsi(sez1, sez2).pop(0)
+    return zlitek
     
-            
-# =====================================================================@001512=
+
+# =====================================================================@040199=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
+# Postopek *urejanja* sprejme seznam elementov in vrne seznam, v katerem
+# so elementi originalnega seznama našteti po vrsti (v naraščajočem vrstnem redu). Eden
+# od pristopov za urejanje je *urejanje z zlivanjem*. Pri urejanju z zlivanjem vhodni
+# seznam razdelimo na pol, __rekurzivno__ uredimo polovici in ju nato zlijemo. Rekurzija se ustavi, ko najdemo seznam, ki ne more biti neurejen (namig: seznami katerih dolžin so vedno urejeni?).
 # 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+# Sestavite funkcijo `uredi`, ki sprejme seznam in ga uredi po postopku urejanja z zlivanjem, tj., ne uporablja vgrajenih metod za urejanje.
+# 
+#     >>> uredi([1, 3, 2, 5, 6, 7, 8, 4])
+#     [1, 2, 3, 4, 5, 6, 7, 8]
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
-# 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
-# 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
-# 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
-# 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
-# =============================================================================
-
-
-
+def uredi(sez):
+    sez1 = sez[:len(sez) // 2]
+    sez2 = sez[len(sez) // 2:]
+    usez = zlij(sez1, sez2)
+    if len(sez1) == 1:
+        return uredi(sez2)
+    else:
+        return uredi(sez1)
 
 
 
@@ -701,12 +679,24 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0Ijo0MDE5NywidXNlciI6MTA3MzB9:1u7Tf1:TeP9VZds8S9ancdntwaGAnrDymoskx4Bc_ExSImHPkA"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
+            tests = [
+                ([1, 2, 3], [4, 5, 6], [1, 2, 3]),
+                ([1], [2], [1]),
+                ([1], [], [1]),
+                ([], [2], [2]),
+                ([], [], []),
+                (["a", "b"], ["c", "d"], ["a", "b"])
+            ]
+            
+            for a, b, r in tests:
+                Check.equal(f'v_katerem_je_manjsi({a}, {b})', r)
+            
+            a = [1, 2, 3]
+            b = [3, 4, 5]
+            if 'v_katerem_je_manjsi' in globals() and (v_katerem_je_manjsi(a, b) is not a or v_katerem_je_manjsi(b, a) is not a):
+                Check.error("Funkcija naj vrne natanko seznam, ki ga dobi kot argument, ne njegove kopije.")
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -718,18 +708,22 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
+        ] = "eyJwYXJ0Ijo0MDE5OCwidXNlciI6MTA3MzB9:1u7Tf1:z2bTPm31dsf4j3tkNTuxo7t5YEKNrz6Mjfn8MlW9KnI"
         try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
+            tests = [
+                ([1, 2, 3], [4, 5, 6], [1, 2, 3, 4, 5, 6]),
+                ([1], [2], [1, 2]),
+                ([1], [], [1]),
+                ([], [2], [2]),
+                ([1, 3, 5], [2, 4, 6], [1, 2, 3, 4, 5, 6]),
+                ([1, 2, 3, 6, 7, 8], [4, 5], [1, 2, 3, 4, 5, 6, 7, 8]),
+                ([], [], []),
+                ([2], [1, 3, 4], [1, 2, 3, 4]),
+                ([1, 3, 4], [2], [1, 2, 3, 4]),
             ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
+            
+            for a, b, r in tests:
+                Check.equal(f'zlij({a}, {b})', r)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,47 +735,14 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
+        ] = "eyJwYXJ0Ijo0MDE5OSwidXNlciI6MTA3MzB9:1u7Tf1:LU-8a72Gdm4wk5X4AoTF-IrZFV_8gjEecXLnSZdSsEE"
         try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
-                    break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            tests = (
+                [1, 3, 2, 5, 6, 7, 8, 4], [1], [], ["c", "d", "a"]
             )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
-        try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            
+            for a in tests:
+                Check.equal(f'uredi({a})', sorted(a))
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

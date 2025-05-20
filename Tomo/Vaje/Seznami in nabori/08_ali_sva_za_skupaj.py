@@ -1,89 +1,114 @@
 # =============================================================================
-# Imena
+# Ali sva za skupaj?
 #
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
+# Dolgoletne raziskave partnerskih odnosov kažejo, da je najboljši pokazatelj
+# uspešnosti in dolgotrajnosti zveze število, ki ga izračunamo po spodnjem
+# postopku. Najprej za vsako črko v besedi LOVES preštejemo število njenih
+# pojavitev v imenih obeh partnerjev, s čimer dobimo petmestno število. Nato
+# v tem številu seštejemo po dve sosednji števki in tako dobimo novo število.
+# Ta postopek ponavljamo, dokler nam ne ostaneta le dve števki, ki nam povesta
+# odstotek uspešnosti zveze. Poglejmo si primer za Julijo Primic in Franceta
+# Prešerna. Najprej preštejemo število pojavitev črk LOVES:
 # 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+#            Julija Primic    France Prešeren
+#     L: 1     *
+#     O: 0
+#     V: 0
+#     E: 4                         *   * * *
+#     S: 0
+# 
+# Nato postopoma računamo vsoto dveh sosednjih števk:
+# 
+#     1   0   0   4   0
+#       1   0   4   4
+#         1   4   8
+#           5   12  (kar pišemo kot)
+#         5   1   2
+#           6   3
+# 
+# Možnosti je torej 63%. Nekateri znanstveniki (predvsem v svetu z bolj
+# germansko kulturo) zagovarjajo alternativen pristop, v katerem je treba začeti
+# s črkami v besedi ŠANSE. V tem primeru za naša zaljubljenca po podobnem
+# postopku dobimo 87%.
+# =====================================================================@013413=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# Sestavite funkcijo `razbij_na_stevke(stevilo)`, ki vrne števke danega
+# števila:
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+#     >>> razbij_na_stevke(12382)
+#     [1, 2, 3, 8, 2]
+#     >>> razbij_na_stevke(6)
+#     [6]
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+def razbij_na_stevke(x):
+    stevke = []
+    for stevka in f"{x}":
+        stevke.append(int(stevka))
+    return stevke
+# =====================================================================@013414=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Sestavite funkcijo `prestej_crke(geslo, niz)`, ki vrne seznam pojavitev črk
+# niza `geslo` v danem nizu `niz`. Pri tem naj se ne ozira na male ali velike
+# črke (pomagajte si z metodo `upper`):
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
-# 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> prestej_crke('LOVES', 'france')
+#     [0, 0, 0, 1, 0]
+#     >>> prestej_crke('ŠANSE', 'prešeren')
+#     [1, 0, 1, 0, 3]
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
-# =====================================================================@001512=
+def razbij_na_crke(niz):
+    crke = []
+    for crka in niz:
+        crke.append(crka)
+    return crke
+def prestej_crke(geslo, niz):
+    crke1 = razbij_na_crke(geslo.upper())
+    crke2 = razbij_na_crke(niz.upper())
+    pojavitve = []
+    for x in crke1:
+        pojavitve.append(crke2.count(x))
+    return pojavitve
+# =====================================================================@013415=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
+# Sestavite funkcijo `sestej_stevke(stevke)`, ki vrne seznam števk, ki ga
+# dobimo, ko seštejemo sosednje števke v seznamu `stevke`. Če je vsota dveh
+# sosednjih števk dvomestno število, v vrnjeni seznam dodate dve števki.
+# Na primer:
 # 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+#     >>> sestej_stevke([1, 0, 4, 4])
+#     [1, 4, 8]
+#     >>> sestej_stevke([1, 4, 8])
+#     [5, 1, 2]
+#     >>> sestej_stevke([5, 1, 2])
+#     [6, 3]
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
+def sestej_stevke(stevke):
+    nove_stevke = []
+    for i in range(len(stevke) - 1):
+        x = stevke[i] + stevke[i + 1]
+        if x < 10:
+            nove_stevke.append(x)
+        else:
+            nove_stevke.extend(razbij_na_stevke(x))
+    return nove_stevke
+# =====================================================================@013416=
 # 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
+# Sestavite funkcijo `ujemanje(oseba1, oseba2, geslo)`, ki po zgoraj opisanem
+# postopku izračuna odstotek uspešnosti zveze med osebama z imenoma `oseba1`
+# in `oseba2`. Argument `geslo` naj ima privzeto vrednost `'LOVES'`.
 # 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
-# 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
-# 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
+#     >>> ujemanje('Julija Primic', 'France Prešeren', geslo='LOVES')
+#     63
+#     >>> ujemanje('Julija Primic', 'France Prešeren')
+#     63
+#     >>> ujemanje('Julija Primic', 'France Prešeren', geslo='ŠANSE')
+#     87
 # =============================================================================
-
+def ujemanje(os1, os2, geslo="LOVES"):
+    stevke = prestej_crke(geslo, os1 + os2)
+    while len(stevke) > 2:
+        stevke = sestej_stevke(stevke)
+    return 10 * stevke[0] + stevke[1]
 
 
 
@@ -701,12 +726,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0IjoxMzQxMywidXNlciI6MTA3MzB9:1uCCt4:xZmBD0GSRGPt6LJljJX1m56M7otkxO03VKx_oKXHfDc"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
+            Check.equal('razbij_na_stevke(12382)', [1, 2, 3, 8, 2]) and \
+            Check.equal('razbij_na_stevke(6)', [6])
+            Check.equal('razbij_na_stevke(0)', [0])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -718,18 +742,10 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
+        ] = "eyJwYXJ0IjoxMzQxNCwidXNlciI6MTA3MzB9:1uCCt4:m-BE-od6Exbm9npfkdHodk_7kM79LZAHA26Jv-TgkXk"
         try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
-            ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
+            Check.equal("prestej_crke('LOVES', 'france')", [0, 0, 0, 1, 0]) and \
+            Check.equal("prestej_crke('ŠANSE', 'prešeren')", [1, 0, 1, 0, 3])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,21 +757,12 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
+        ] = "eyJwYXJ0IjoxMzQxNSwidXNlciI6MTA3MzB9:1uCCt4:axTevh0hotIuR7guCe_ULi8Li0lEXJ8xLCngRmKjTfI"
         try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
-                    break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
+            Check.equal('sestej_stevke([2, 0, 0, 4])', [2, 0, 4]) and \
+            Check.equal('sestej_stevke([1, 0, 4, 4])', [1, 4, 8]) and \
+            Check.equal('sestej_stevke([1, 4, 8])', [5, 1, 2]) and \
+            Check.equal('sestej_stevke([5, 1, 2])', [6, 3])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -767,21 +774,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
+        ] = "eyJwYXJ0IjoxMzQxNiwidXNlciI6MTA3MzB9:1uCCt4:92NuPvRZuIQPwDAXSVStvXoLWjpqwHXiwAV69VIP7TE"
         try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            Check.equal("ujemanje('Julija Primic', 'France Prešeren')", 63) and \
+            Check.equal("ujemanje('Julija Primic', 'France Prešeren', geslo='LOVES')", 63) and \
+            Check.equal("ujemanje('Julija Primic', 'France Prešeren', geslo='ŠANSE')", 87)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

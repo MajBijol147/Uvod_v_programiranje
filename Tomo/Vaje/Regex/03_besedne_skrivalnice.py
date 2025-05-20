@@ -1,89 +1,76 @@
 # =============================================================================
-# Imena
+# Besedne skrivalnice
 #
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
+# Drugi argument klica `re.sub(vzorec, nadomestek, besedilo)` je lahko tudi funkcija,
+# ki sprejme objekt tipa _Match_ (kot bi ga npr. vrnila `re.search` ali `re.match`)
+# in vrne niz, s katerim lahko nadomestimo zadetek iskanja.
 # 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+# Če definiramo npr.
+# 
+#     def nadomestek(zadetek):
+#         return zadetek.group(1) + zadetek.group(1)
+# 
+# 
+# bomo s klicem `re.sub("([ae])", nadomestek, besedilo)`
+# podvojili vse `a`-je in `e`-je v besedilu.
+# =====================================================================@033404=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# Sestavi funkcijo `malce_anonimiziraj(besedilo)`, ki sprejme besedilo in v njem
+# priimke nadomesti z inicialko:
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+#     >>> malce_anonimiziraj("Jože Gorišek dela na fuš.")
+#     "Jože G. dela na fuš."
+#     >>> malce_anonimiziraj("Julija! Ljubim te. Večno tvoj France Prešeren")
+#     "Julija! Ljubim te. Večno tvoj France P."
+# 
+# Predpostavite lahko, da zaporedni besedi, ki se začneta z veliko začetnico,
+# predstavljata ime in priimek.
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+def malce_anonimiziraj(niz):
+    vzorec = r"(\b[A-ZČŠŽ]\w*)\s([A-ZČŠŽ])\w*\b"
+    nov_niz = re.sub(vzorec, r"\1 \2.", niz)
+    return nov_niz
+# =====================================================================@033406=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Skrivno govorico papajščino iz slovenščine dobimo tako, da za vsak samoglasnik
+# vrinemo črko p in isti samoglasnik. Beseda jagoda postane _japagopodapa_,
+# medtem ko mapa postane _mapapapa_.
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
+# Sestavite funkcijo `po_papajsko(besedilo)`, ki vrne papajsko različico
+# besedila.
 # 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> po_papajsko("jagoda")
+#     "japagopodapa"
+#     >>> po_papajsko("mapa sapa")
+#     "mapapapa sapapapa"
+#     >>> po_papajsko("Ali je Anja doma?")
+#     "Apalipi jepe Apanjapa dopomapa?"
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
-# =====================================================================@001512=
+def nadomestek(zad):
+    return zad.group(1) + "p" + zad.group(1).lower()
+def po_papajsko(niz):
+    vzorec = r"([aeiouAEIUO])"
+    nov_niz = re.sub(vzorec, nadomestek, niz)
+    return nov_niz
+# =====================================================================@033405=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
+# Zapiši funkcijo `cenzura(besedilo, nedopustne_besede)`, ki v
+# besedilu vsako od nedopustnih besed nadomesti z ustreznim številom `X`-ov:
 # 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+#     >>> cenzura("Kaj je to, hudiča?", ["to", "hudiča"])
+#     "Kaj je XX, XXXXXX?"
+#     >>> cenzura("Kateri je tvoj najljubši predmet? Fizika.", ["fizika"])
+#     "Kateri je tvoj najljubši predmet? XXXXXX."
+# 
+# Kot je razvidno iz drugega primera, ne smemo razlikovati med velikimi in
+# majhnimi črkami. To dosežemo tako, da funkciji `re.sub` podamo
+# še neobvezni argument `flags`, ki ga nastavimo na `re.IGNORECASE`.
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
-# 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
-# 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
-# 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
-# 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
-# =============================================================================
-
+def cenzura(niz, cenz):
+    for vzorec in cenz:
+        niz = re.sub(vzorec, "X"*len(vzorec), niz, flags=re.IGNORECASE)
+    return niz
+    
 
 
 
@@ -701,12 +688,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0IjozMzQwNCwidXNlciI6MTA3MzB9:1uCHvx:WIe0HC8eTq_-7Oscbi3vy5DUtxRlP4tdRa4BAHqk4g0"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
+            Check.equal('malce_anonimiziraj("Jože Gorišek dela na fuš.")', "Jože G. dela na fuš.")
+            Check.equal(
+                'malce_anonimiziraj("Julija! Ljubim te. Večno tvoj France Prešeren")',
+                "Julija! Ljubim te. Večno tvoj France P.",
+            )
+            Check.equal(
+                'malce_anonimiziraj("Žan Černe je Špelo Čušin poklical točno ob 12h.")',
+                "Žan Č. je Špelo Č. poklical točno ob 12h.",
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -718,18 +710,14 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
+        ] = "eyJwYXJ0IjozMzQwNiwidXNlciI6MTA3MzB9:1uCHvx:-OvvBvZU4LOxjpBbsmeD9Q0IoNV8ca2uaneCHX0_Mkw"
         try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
-            ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
+            Check.equal('po_papajsko("jagoda")', "japagopodapa")
+            Check.equal(
+                'po_papajsko("To je mapa, da ti poide sapa!")',
+                "Topo jepe mapapapa, dapa tipi popoipidepe sapapapa!",
+            )
+            Check.equal('po_papajsko("Ali je Anja doma?")', "Apalipi jepe Apanjapa dopomapa?")
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,47 +729,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
+        ] = "eyJwYXJ0IjozMzQwNSwidXNlciI6MTA3MzB9:1uCHvx:oKeaC4TC2eE1Z0o6J4JBY0lHl36jE2sZ9OuikpMh9Ss"
         try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
-                    break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            Check.equal('cenzura("Kaj je to, hudiča?", ["to", "hudiča"])', "Kaj je XX, XXXXXX?")
+            Check.equal(
+                'cenzura("Kateri je tvoj najljubši predmet? Fizika.", ["fizika"])',
+                "Kateri je tvoj najljubši predmet? XXXXXX.",
             )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
-        try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            Check.equal(
+                'cenzura("Vse je dovoljeno", [])', "Vse je dovoljeno"
+            )
+            Check.equal(
+                'cenzura("Nič nI dOvOLjEno.", ["nič", "ni", "dovoljeno"])', "XXX XX XXXXXXXXX."
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

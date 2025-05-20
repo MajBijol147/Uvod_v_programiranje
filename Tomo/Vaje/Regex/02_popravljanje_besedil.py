@@ -1,89 +1,60 @@
 # =============================================================================
-# Imena
+# Popravljanje besedil
 #
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
-# 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+# ... s funkcijo `re.sub(vzorec, nadomestek, besedilo)`.
+# =====================================================================@040093=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# *Ta podnaloga je okorno rešena že v sklopu Zanke, ampak precej lepše se jo
+# reši z regularninmi izrazi.*
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+# Napišite funkcijo `odstrani_veckratne_vprasaje`, ki sprejme niz ter mu
+# odstrani večkratne zaporedne vprašaje. Funkcija naj vrne nov popravljen niz.
+# 
+#     >>> odstrani_veckratne_vprasaje('?????')
+#     '?'
+#     >>> odstrani_veckratne_vprasaje('Kdo?? Si?? Ti???')
+#     'Kdo? Si? Ti?'
+#     >>> odstrani_veckratne_vprasaje('Kdo?? Si? Ti?')
+#     'Kdo? Si? Ti?'
+#     >>> odstrani_veckratne_vprasaje('Ananas')
+#     'Ananas'
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+def odstrani_veckratne_vprasaje(niz):
+    vzorec = r"\?+"
+    nov_niz = re.sub(vzorec, "?", niz)
+    return nov_niz
+# =====================================================================@033402=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Sestavite funkcijo `poenostavi(naloga)`, ki sprejme opis matematične
+# naloge (kot niz) in v njej vsa števila nadomesti z `10`.
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
-# 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> poenostavi("Koliko je 2 krat 4?")
+#     "Koliko je 10 krat 10?"
+#     >>> poenostavi("Koliko stane riž, če se je od lani (1,2 €) podražil za 12 %?")
+#     "Koliko stane riž, če se je od lani (10 €) podražil za 10 %?"
+#     >>> poenostavi("Pretvori -273,16 °C v Kelvine!")
+#     "Pretvori 10 °C v Kelvine!"
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
-# =====================================================================@001512=
+def poenostavi(niz):
+    vzorec = r"-*\d+,*\d*"
+    nov_niz = re.sub(vzorec, "10", niz)
+    return nov_niz
+# =====================================================================@033403=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
+# Sestavite funkcijo `enote_na_konec(besedilo)`, ki sprejme slabo prevedeno
+# besedilo (iz angleščine v slovenščino), kjer se denarne enote pojavljajo pred
+# številom, in ga popravi. Predpostavite lahko, da se v besedilu pojavljajo le
+# evri in dolarji.
 # 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+#     >>> enote_na_konec("Cena kave je € 2, cena čaja pa €3.")
+#     "Cena kave je 2 €, cena čaja pa 3 €."
+#     >>> enote_na_konec("$ 1 = € 1 se mi ne zdi pošten menjalni tečaj.")
+#     "1 $ = 1 € se mi ne zdi pošten menjalni tečaj."
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
-# 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
-# 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
-# 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
-# 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
-# =============================================================================
-
+def enote_na_konec(niz):
+    vzorec = r"([€$])\s*(\d+)"
+    nov_niz = re.sub(vzorec, r"\2 \1", niz)
+    return nov_niz
 
 
 
@@ -701,12 +672,13 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0Ijo0MDA5MywidXNlciI6MTA3MzB9:1uCHfA:FtrvfYMFO8pRpjAwDkshj_Wda1mCm96Ft8sOUhVmSMg"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
+            Check.equal("odstrani_veckratne_vprasaje('?????')", '?')
+            Check.equal("odstrani_veckratne_vprasaje('Kdo?? Si?? Ti???')", 'Kdo? Si? Ti?')
+            Check.equal("odstrani_veckratne_vprasaje('Kdo?? Si? Ti?')", 'Kdo? Si? Ti?')
+            Check.equal("odstrani_veckratne_vprasaje('Ananas')", 'Ananas')
+            Check.equal("odstrani_veckratne_vprasaje('')", '')
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -718,18 +690,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
+        ] = "eyJwYXJ0IjozMzQwMiwidXNlciI6MTA3MzB9:1uCHfA:JLC6jg8e2St2n4IElss4aE_nVkry0cPcDfu0w3gLXIc"
         try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
-            ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
+            Check.equal('poenostavi("Koliko je 2 krat 4?")', "Koliko je 10 krat 10?")
+            Check.equal(
+                'poenostavi("Koliko stane riž, če se je od lani (1,2 €) podražil za 12 %?")',
+                 "Koliko stane riž, če se je od lani (10 €) podražil za 10 %?"
+                )
+            Check.equal(
+                'poenostavi("Pretvori -273,16 °C v Kelvine!")',
+                "Pretvori 10 °C v Kelvine!"
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,47 +712,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
+        ] = "eyJwYXJ0IjozMzQwMywidXNlciI6MTA3MzB9:1uCHfA:TqZz5bdnlB2XXmBBdX2xbmIaLS2RyioUxZwAyoEtTac"
         try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
-                    break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            Check.equal(
+                'enote_na_konec("Cena kave je € 2, cena čaja pa €3.")',
+                "Cena kave je 2 €, cena čaja pa 3 €."
             )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
-        try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            Check.equal(
+                'enote_na_konec("$ 1 = € 1 se mi ne zdi pošten menjalni tečaj.")',
+                "1 $ = 1 € se mi ne zdi pošten menjalni tečaj."
+            )
+            
+            Check.equal(
+                'enote_na_konec("Znak € zapišemo evro.")',
+                "Znak € zapišemo evro."
+            )
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

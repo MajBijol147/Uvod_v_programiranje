@@ -58,18 +58,12 @@ def prepisi_in_zagrozi(dat1, dat2):
 #     ['nepoliticno.txt']
 # =============================================================================
 def groznje_z_dovolj_klicaji(sez):
-    with open(sez[0], encoding='UTF-8') as d:
-        besedilo0 = d.read()
-        klicaji0 = besedilo0.count("!")
-    izhod = [sez[0], klicaji0]
+    rez = []
     for dat in sez:
-        with open(dat, encoding='UTF-8') as DAT:
-            besedilo = DAT.read()
-            klicaji = besedilo.count("!")
-            if klicaji > klicaji0:
-                izhod[0] = dat
-                klicaji0 = klicaji
-    return [izhod[0]]
+        with open(dat, encoding='UTF-8') as d:
+            if d.read().count("!") >= 3:
+                rez.append(dat)
+    return rez
 
 
 

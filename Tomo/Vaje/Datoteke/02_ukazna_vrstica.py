@@ -8,7 +8,7 @@
 # V operacijskem sistemu Windows lahko programe poganjamo z ukazno vrstico
 # `Command Prompt`. Odpremo jo tako, da zaženemo program `CMD`. Storite to.
 # =============================================================================
-
+ukaz = "CMD"
 # =====================================================================@009827=
 # 2. podnaloga
 # Ukazna vrstica deluje podobno kot brskalnik po datotečnem sistemu. Na začetku

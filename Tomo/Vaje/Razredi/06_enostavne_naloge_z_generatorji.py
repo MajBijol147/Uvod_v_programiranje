@@ -1,87 +1,87 @@
 # =============================================================================
-# Imena
-#
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
-# 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+# Enostavne naloge z generatorji
+# =====================================================================@001930=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# Napišite generator `stevke`, ki generira števke naravnega števila
+# začenši z enicami (s skrajno desno števko).
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+#     >>> [x for x in stevke(1337)]
+#     [7, 3, 3, 1]
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+def stevke(n):
+    st = str(n)
+    i = len(st) - 1
+    while i >= 0:
+        yield int(st[i])
+        i -= 1
+        
+# =====================================================================@001931=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Sestavite generator `potence_naravnih(k)`, ki kot argument dobi število
+# `k` in generira (neskončno) zaporedje $1^k, 2^k, 3^k, 4^k, \ldots$
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
-# 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> g = potence_naravnih(2)
+#     >>> [next(g) for i in range(10)]
+#     [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
-# =====================================================================@001512=
+def potence_naravnih(k):
+    i = 1
+    while i:
+        yield i**k
+        i += 1
+# =====================================================================@001932=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
+# Sestavite generator `fakultete(n)`, ki kot argument dobi nenegativno
+# celo število `n` in generira (neskončno) zaporedje $n!, (n+1)!, (n+2)!, \ldots$
 # 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+#     >>> g = fakultete(0)
+#     >>> [next(g) for i in range(10)]
+#     [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
+def fakultete(n):
+    if n == 0:
+        yield 1
+        n += 1
+    ans = 1
+    for x in range(1, n):
+        ans *= x
+    while True:
+        ans *= n
+        yield ans
+        n += 1
+            
+# =====================================================================@001933=
 # 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
+# Spomnimo se, da je Collatzovo zaporedje z začetnim členom $a_0$ definirano
+# s predpisom $a_{i+1} = a_i / 2$, če je $a_i$ sodo,
+# in $a_{i+1} = 3 a_i + 1$ sicer.
 # 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
+# Sestavite generator `collatz`, ki kot argument dobi naravno število
+# in generira Collatzovo zaporedje s tem začetnim členom. Generiranje naj se
+# konča, ko pridemo do števila 1.
 # 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
+#     >>> [x for x in collatz(20)]
+#     [20, 10, 5, 16, 8, 4, 2, 1]
+# =============================================================================
+
+# =====================================================================@001934=
+# 5. podnaloga
+# Sestavite generator `delitelji`, ki kot argument dobi naravno število
+# in generira njegove delitelje (od najmanjšega proti največjemu).
 # 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
+#     >>> [x for x in delitelji(12)]
+#     [1, 2, 3, 4, 6, 12]
+# =============================================================================
+
+# =====================================================================@001935=
+# 6. podnaloga
+# Sestavite generator `ucinkoviti_delitelji`, ki deluje tako kot generator
+# `delitelji`, vendar poskrbite, da deluje učinkovito, saj bomo njegovo
+# delovanje preverili na velikih številih. Najbolje je, da že generator
+# `delitelji` napišete učinkovito, nato pa generator `ucinkoviti_delitelji`
+# definirate kar kot:
 # 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
+#     ucinkoviti_delitelji = delitelji
 # =============================================================================
 
 
@@ -701,61 +701,16 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0IjoxOTMwLCJ1c2VyIjoxMDczMH0:1u7T3P:6NsQ8wJ0WAUvKCwmzGX4Pyod7bz1RdMbnOO6qwbDUEQ"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
-        try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
-            ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
-        try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
+            testCases = [("stevke(8)", [8], {'should_stop': True}),
+                         ("stevke(43)", [3, 4], {'should_stop': True}),
+                         ("stevke(162)", [2, 6, 1], {'should_stop': True}),
+                         ("stevke(1337)", [7, 3, 3, 1], {'should_stop': True}),
+                         ("stevke(526481379)", [9, 7, 3, 1, 8, 4, 6, 2, 5], {'should_stop': True})]
+            for example, correct, options in testCases:
+                if not Check.generator(example, correct, **options):
                     break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -767,21 +722,111 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
+        ] = "eyJwYXJ0IjoxOTMxLCJ1c2VyIjoxMDczMH0:1u7T3P:sh9ac9qxxbl3QuVb_tKwAv24VBCHBw9zyDHiYCFK18M"
         try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            testCases = [("potence_naravnih(2)", [1, 4, 9, 16, 25, 36, 49, 64, 81, 100], {'further_iter': 100}),
+                         ("potence_naravnih(3)", [1, 8, 27, 64, 125, 216, 343, 512, 729, 1000], {'further_iter': 100}),
+                         ("potence_naravnih(-1)", [1.0, 0.5, 0.3333333333333333, 0.25, 0.2, 0.16666666666666666, 0.14285714285714285, 0.125, 0.1111111111111111, 0.1], {'further_iter': 100}),
+                         ("potence_naravnih(0.5)", [1.0, 1.4142135623730951, 1.7320508075688772, 2.0, 2.23606797749979, 2.449489742783178, 2.6457513110645907, 2.8284271247461903, 3.0, 3.1622776601683795], {'further_iter': 100}),
+                         ("potence_naravnih(5)", [1, 32, 243, 1024, 3125, 7776, 16807, 32768, 59049, 100000, 161051, 248832, 371293, 537824, 759375, 1048576, 1419857, 1889568, 2476099, 3200000],  {'further_iter': 100})]
+            for example, correct, options in testCases:
+                if not Check.generator(example, correct, **options):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxOTMyLCJ1c2VyIjoxMDczMH0:1u7T3P:i6jNfPkOsnWuMpbnzRiK19UP7XevM-J0t5KZG9zbzSk"
+        try:
+            testCases = [("fakultete(0)", [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 20922789888000, 355687428096000, 6402373705728000, 121645100408832000], {'further_iter': 10}),
+                         ("fakultete(1)", [1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800], {'further_iter': 10}),
+                         ("fakultete(2)", [2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800], {'further_iter': 10}),
+                         ("fakultete(20)", [2432902008176640000, 51090942171709440000, 1124000727777607680000, 25852016738884976640000, 620448401733239439360000, 15511210043330985984000000], {'further_iter': 10}),
+                         ("fakultete(10)", [3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 20922789888000, 355687428096000, 6402373705728000, 121645100408832000], {'further_iter': 500})]
+            for example, correct, options in testCases:
+                if not Check.generator(example, correct, **options):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxOTMzLCJ1c2VyIjoxMDczMH0:1u7T3P:rQ6sgCZi_eZn9jzy1qZe9rqV8yAjRq9P_2-0I0kwBEY"
+        try:
+            testCases = [("collatz(20)", [20, 10, 5, 16, 8, 4, 2, 1], {'should_stop': True}),
+                         ("collatz(1)", [1], {'should_stop': True}),
+                         ("collatz(97)", [97, 292, 146, 73, 220, 110, 55, 166, 83, 250, 125, 376, 188, 94, 47, 142, 71, 214, 107, 322, 161, 484, 242, 121, 364, 182, 91, 274, 137, 412, 206, 103, 310, 155, 466, 233, 700, 350, 175, 526, 263, 790, 395, 1186, 593, 1780, 890, 445, 1336, 668, 334, 167, 502, 251, 754, 377, 1132, 566, 283, 850, 425, 1276, 638, 319, 958, 479, 1438, 719, 2158, 1079, 3238, 1619, 4858, 2429, 7288, 3644, 1822, 911, 2734, 1367, 4102, 2051, 6154, 3077, 9232, 4616, 2308, 1154, 577, 1732, 866, 433, 1300, 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35, 106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1], {'should_stop': True}),
+                         ("collatz(73)", [73, 220, 110, 55, 166, 83, 250, 125, 376, 188, 94, 47, 142, 71, 214, 107, 322, 161, 484, 242, 121, 364, 182, 91, 274, 137, 412, 206, 103, 310, 155, 466, 233, 700, 350, 175, 526, 263, 790, 395, 1186, 593, 1780, 890, 445, 1336, 668, 334, 167, 502, 251, 754, 377, 1132, 566, 283, 850, 425, 1276, 638, 319, 958, 479, 1438, 719, 2158, 1079, 3238, 1619, 4858, 2429, 7288, 3644, 1822, 911, 2734, 1367, 4102, 2051, 6154, 3077, 9232, 4616, 2308, 1154, 577, 1732, 866, 433, 1300, 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35, 106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1], {'should_stop': True}),
+                         ("collatz(54)", [54, 27, 82, 41, 124, 62, 31, 94, 47, 142, 71, 214, 107, 322, 161, 484, 242, 121, 364, 182, 91, 274, 137, 412, 206, 103, 310, 155, 466, 233, 700, 350, 175, 526, 263, 790, 395, 1186, 593, 1780, 890, 445, 1336, 668, 334, 167, 502, 251, 754, 377, 1132, 566, 283, 850, 425, 1276, 638, 319, 958, 479, 1438, 719, 2158, 1079, 3238, 1619, 4858, 2429, 7288, 3644, 1822, 911, 2734, 1367, 4102, 2051, 6154, 3077, 9232, 4616, 2308, 1154, 577, 1732, 866, 433, 1300, 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35, 106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1], {'should_stop': True}),
+                         ("collatz(871)", [871, 2614, 1307, 3922, 1961, 5884, 2942, 1471, 4414, 2207, 6622, 3311, 9934, 4967, 14902, 7451, 22354, 11177, 33532, 16766, 8383, 25150, 12575, 37726, 18863, 56590, 28295, 84886, 42443, 127330, 63665, 190996, 95498, 47749, 143248, 71624, 35812, 17906, 8953, 26860, 13430, 6715, 20146, 10073, 30220, 15110, 7555, 22666, 11333, 34000, 17000, 8500, 4250, 2125, 6376, 3188, 1594, 797, 2392, 1196, 598, 299, 898, 449, 1348, 674, 337, 1012, 506, 253, 760, 380, 190, 95, 286, 143, 430, 215, 646, 323, 970, 485, 1456, 728, 364, 182, 91, 274, 137, 412, 206, 103, 310, 155, 466, 233, 700, 350, 175, 526, 263, 790, 395, 1186, 593, 1780, 890, 445, 1336, 668, 334, 167, 502, 251, 754, 377, 1132, 566, 283, 850, 425, 1276, 638, 319, 958, 479, 1438, 719, 2158, 1079, 3238, 1619, 4858, 2429, 7288, 3644, 1822, 911, 2734, 1367, 4102, 2051, 6154, 3077, 9232, 4616, 2308, 1154, 577, 1732, 866, 433, 1300, 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35, 106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1]
+            , {'should_stop': True}),
+                         ("collatz(937)", [937, 2812, 1406, 703, 2110, 1055, 3166, 1583, 4750, 2375, 7126, 3563, 10690, 5345, 16036, 8018, 4009, 12028, 6014, 3007, 9022, 4511, 13534, 6767, 20302, 10151, 30454, 15227, 45682, 22841, 68524, 34262, 17131, 51394, 25697, 77092, 38546, 19273, 57820, 28910, 14455, 43366, 21683, 65050, 32525, 97576, 48788, 24394, 12197, 36592, 18296, 9148, 4574, 2287, 6862, 3431, 10294, 5147, 15442, 7721, 23164, 11582, 5791, 17374, 8687, 26062, 13031, 39094, 19547, 58642, 29321, 87964, 43982, 21991, 65974, 32987, 98962, 49481, 148444, 74222, 37111, 111334, 55667, 167002, 83501, 250504, 125252, 62626, 31313, 93940, 46970, 23485, 70456, 35228, 17614, 8807, 26422, 13211, 39634, 19817, 59452, 29726, 14863, 44590, 22295, 66886, 33443, 100330, 50165, 150496, 75248, 37624, 18812, 9406, 4703, 14110, 7055, 21166, 10583, 31750, 15875, 47626, 23813, 71440, 35720, 17860, 8930, 4465, 13396, 6698, 3349, 10048, 5024, 2512, 1256, 628, 314, 157, 472, 236, 118, 59, 178, 89, 268, 134, 67, 202, 101, 304, 152, 76, 
+            38, 19, 58, 29, 88, 44, 22, 11, 34, 17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1], {'should_stop': True}),
+                         ("collatz(1125899906842624)", [1125899906842624, 562949953421312, 281474976710656, 140737488355328, 70368744177664, 35184372088832, 17592186044416, 8796093022208, 4398046511104, 2199023255552, 1099511627776, 549755813888, 274877906944, 137438953472, 68719476736, 34359738368, 17179869184, 8589934592, 4294967296, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1], {'should_stop': True})]
+            for example, correct, options in testCases:
+                if not Check.generator(example, correct, **options):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxOTM0LCJ1c2VyIjoxMDczMH0:1u7T3P:7iGxDvAFBXc2teuqnAtlLIXIChKKEvsiuqGELTLCDWc"
+        try:
+            testCases = [("delitelji(7)", [1, 7], {'should_stop': True}),
+                         ("delitelji(12)", [1, 2, 3, 4, 6, 12], {'should_stop': True}),
+                         ("delitelji(25)", [1, 5, 25], {'should_stop': True}),
+                         ("delitelji(60)", [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60], {'should_stop': True}),
+                         ("delitelji(1001)", [1, 7, 11, 13, 77, 91, 143, 1001], {'should_stop': True}),
+                         ("delitelji(2017)", [1, 2017], {'should_stop': True})]
+            for example, correct, options in testCases:
+                if not Check.generator(example, correct, **options):
+                    break
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxOTM1LCJ1c2VyIjoxMDczMH0:1u7T3P:689E9toLyt7qUob1wWy8KKi1Llt5CC3VXpAqdF2fLFM"
+        try:
+            testCases = [("ucinkoviti_delitelji(7)", [1, 7], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(12)", [1, 2, 3, 4, 6, 12], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(25)", [1, 5, 25], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(60)", [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(1001)", [1, 7, 11, 13, 77, 91, 143, 1001], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(2017)", [1, 2017], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(244140625)", [1, 5, 25, 125, 625, 3125, 15625, 78125, 390625, 1953125, 9765625, 48828125, 244140625], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(1220703125)", [1, 5, 25, 125, 625, 3125, 15625, 78125, 390625, 1953125, 9765625, 48828125, 244140625, 1220703125], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(1555200)", [1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50, 54, 60, 64, 72, 75, 80, 81, 90, 96, 100, 108, 120, 128, 135, 144, 150, 160, 162, 180, 192, 200, 216, 225, 240, 243, 256, 270, 288, 300, 320, 324, 360, 384, 400, 405, 432, 450, 480, 486, 540, 576, 600, 640, 648, 675, 720, 768, 800, 810, 864, 900, 960, 972, 1080, 1152, 1200, 1215, 1280, 1296, 1350, 1440, 1600, 1620, 1728, 1800, 1920, 1944, 2025, 2160, 2304, 2400, 2430, 2592, 2700, 2880, 3200, 3240, 3456, 3600, 3840, 3888, 4050, 4320, 4800, 4860, 5184, 5400, 5760, 6075, 6400, 6480, 6912, 7200, 7776, 8100, 8640, 9600, 9720, 10368, 10800, 11520, 12150, 12960, 14400, 15552, 16200, 17280, 19200, 19440, 20736, 21600, 24300, 25920, 28800, 31104, 32400, 34560, 38880, 43200, 48600, 51840, 57600, 62208, 64800, 77760, 86400, 97200, 103680, 129600, 155520, 172800, 194400, 259200, 311040, 388800, 518400, 777600, 1555200], {'should_stop': True}),
+                         ("ucinkoviti_delitelji(1220703131)", [1, 1220703131], {'should_stop': True})]
+            for example, correct, options in testCases:
+                if not Check.generator(example, correct, **options):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

@@ -1,89 +1,244 @@
 # =============================================================================
-# Imena
+# Permutacije
 #
-# V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
-# posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
-# datoteke:
-# 
-#     Jaka,Peter,Miha,Peter,Anja
-#     Franci,Roman,Renata,Jožefa
-#     Pavle,Tadeja,Arif,Filip,Gašper
-# =====================================================================@001510=
+# Permutacijo običajno predstavimo s seznamom slik posameznih elementov,
+# npr. [5, 1, 6, 4, 2, 3], lahko pa tudi s seznamom disjunktnih ciklov, npr.
+# [[1, 5, 2], [3, 6], [4]]. Ciklov dolžine 1 (fiksnih točk) običajno ne
+# navajamo, a moramo v tem primeru navesti še velikost permutacije
+# (v tem primeru 6).
+# =====================================================================@013404=
 # 1. podnaloga
-# Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
-# pojavitev imena `ime` v nizu imen `niz`.
+# Sestavite funkcijo `je_permutacija`, ki sprejme seznam in preveri,
+# ali je v njem zapisana permutacija v običajnem zapisu. V seznamu je zapisana
+# permutacija, če se vsak element od $1$ do $n$, kjer je $n$ dolžina
+# permutacije, pojavi natanko enkrat.
 # 
-#     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
-#     2
+#     >>> je_permutacija([7, 3, 4, 5, 2, 1])
+#     False
+#     >>> je_permutacija([7, 3, 4, 5, 2, 6, 1])
+#     True
 # =============================================================================
-def kolikokrat_se_pojavi(niz, ime):
-    return niz.split(",").count(ime)
-# =====================================================================@001511=
+def je_permutacija(sez):
+    if sez == []:
+        return True
+    elif max(sez) != len(sez):
+        return False
+    else:
+        return True
+# =====================================================================@013405=
 # 2. podnaloga
-# Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
-# ime zapiše, kolikokrat se pojavi v nizu.
+# Sestavite funkcijo `je_seznam_ciklov`, ki sprejme seznam seznamov in preveri,
+# ali vsebuje disjunktne cikle neke permutacije. Preveriti je torej treba,
+# ali so vsi elementi pozitivni ter ali se vsak element v stiku vseh ciklov
+# pojavi natanko enkrat.
 # 
-# Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
-# datoteko zapiše
-# 
-#     Jaka 1
-#     Luka 2
-#     Miha 1
-# 
-# Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
-# prve pojavitve v nizu.
+#     >>> je_seznam_ciklov([[8,3,4],[5,7,1]])
+#     True
+#     >>> je_seznam_ciklov([[8,1,4],[5,7,1]])
+#     False
 # =============================================================================
-def koliko(niz, datoteka):
-    imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
-        for i, ime in enumerate(imena):
-            if ime in imena[:i]:
-                pass
-            else:
-                print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
-# =====================================================================@001512=
+def je_seznam_ciklov(sez):
+    st = []
+    for cikel in sez:
+        for el in cikel:
+            if el <= 0:
+                return False
+            st.append(el)
+            if st.count(el) > 1:
+                return False
+    return True
+# =====================================================================@013406=
 # 3. podnaloga
-# Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
-# kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
-# datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
+# Sestavite funkcijo `urejeni_cikli`, ki seznam ciklov pretvori v nov seznam
+# tako, da je najmanjši element posameznega cikla vedno na začetku cikla,
+# cikli v seznamu pa so urejeni po velikosti prvih elementov. Morebitne prazne
+# cikle in cikle dolžine 1 naj odstrani.
 # 
-# Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
-# redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
+#     >>> urejeni_cikli([[7, 3], [4], [5, 2, 1]])
+#     [[1, 5, 2], [3, 7]]
 # =============================================================================
-def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
-        besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
-    return koliko(imena, izh)
-# =====================================================================@001513=
+def urejeni_cikli(sez):
+    rez = []
+    for cikel in sez:
+        if len(cikel) > 1:
+            min_i = cikel.index(min(cikel))
+            ur_cikel = cikel[min_i:] + (cikel[:min_i])
+#            print(cikel[min_i: len(cikel)], cikel[:min_i], ur_cikel)
+            rez.append(ur_cikel)
+    rez.sort()
+    return rez
+# =====================================================================@013407=
 # 4. podnaloga
-# Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
-# datoteke in v izhodno datoteko za vsako ime zapiše, kolikokrat se pojavi v
-# vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
-# Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
-# po abecednem vrstnem redu).
+# Sestavite funkcijo `iz_ciklov(cikli, dolzina)`, ki iz seznama ciklov `cikli`
+# sestavi običajen zapis permutacije dolzine `dolzina`. Če parametra `dolzina`
+# ne podamo, ali pa je ta premajhna, naj bo dolžina enaka največjemu elementu,
+# ki se pojavi v ciklih.
 # 
-# Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
-#     Luka,Jaka
-#     Luka,Miha,Miha
-#     Miha,Aleš,Aleš
-# 
-# naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
-# na datoteki imena_izhod.txt naslednja vsebina:
-# 
-#     Miha 3
-#     Aleš 2
-#     Luka 2
-#     Jaka 1
+#     >>> iz_ciklov([[7, 3], [4], [5, 2, 1]])
+#     [5, 1, 7, 4, 2, 6, 3]
+#     >>> iz_ciklov([[7, 3], [4], [5, 2, 1]], 9)
+#     [5, 1, 7, 4, 2, 6, 3, 8, 9]
 # =============================================================================
+def naslednji(cikel, i):
+    if i < len(cikel) - 1:
+        return cikel[i + 1]
+    else:
+        return cikel[0]
 
+
+def iz_ciklov(cikli, dolzina=0):
+    elementi = []
+    perm = []
+    manjk_st = []
+    for cikel in cikli:
+        elementi.extend(cikel)
+    if dolzina < max(elementi):
+        dolzina = max(elementi)
+    for st in range(1, dolzina + 1):
+        if st not in elementi:
+            manjk_st.append(st)
+        for cikel in cikli:
+            if st in cikel:
+                perm.append(naslednji(cikel, cikel.index(st)))
+    for el in manjk_st:
+        perm.insert(el - 1, el)
+    return perm
+# =====================================================================@013408=
+# 5. podnaloga
+# Sestavite funkcijo `v_cikle`, ki iz permutacije sestavi njeno predstavitev s
+# cikli.
+# 
+#     >>> v_cikle([5, 1, 7, 4, 2, 6, 3])
+#     [[1, 5, 2], [3, 7]]
+# =============================================================================
+def v_cikle(perm):
+    cikli = []
+    cela_perm = []
+    porabljeni = set()
+    for st in range(1, max(perm) + 1):
+        cela_perm.append([st, perm[st - 1]])
+    for st in range(1, max(perm) + 1):
+        cikel = []
+        if st in porabljeni:
+            pass
+        else:
+            while st not in cikel:
+                cikel.append(st)
+                porabljeni.add(st)
+                st = naslednji(perm, st - 2)
+        if len(cikel) > 1 and cikel not in cikli:
+            cikli.append(cikel)
+    return cikli
+# =====================================================================@013409=
+# 6. podnaloga
+# Sestavite funkcijo `inverz_perm`, ki sestavi in vrne inverz dane permutacije
+# v običajni predstavitvi.
+# 
+#     >>> inverz_perm([7, 3, 4, 5, 2, 1, 6])
+#     [6, 5, 2, 3, 4, 7, 1]
+# =============================================================================
+def inverz_perm(perm):
+    cela_perm = []
+    inv_perm = []
+    for st in range(1, max(perm) + 1):
+        cela_perm.append([perm[st - 1], st])
+    for el in sorted(cela_perm):
+        inv_perm.append(el[1])
+    return inv_perm
+# =====================================================================@013410=
+# 7. podnaloga
+# Sestavite funkcijo `inverz_cikli`, ki sestavi in vrne inverz dane
+# permutacije, predstavljene s seznamom ciklov. Inverz permutacije dobimo tako,
+# da v cikličnem zapisu obrnemo vse cikle (vsakega posebej).
+# 
+#     >>> inverz_cikli([[7, 3], [4], [5, 2, 1]])
+#     [[1, 2, 5], [3, 7]]
+# =============================================================================
+def inverz_cikli(cikli):
+    inv_cikli = []
+    for cikel in cikli:
+        inv_cikel = []
+        for el in reversed(cikel):
+            inv_cikel.append(el)
+        if len(inv_cikel) > 1:
+            inv_cikli.append(inv_cikel)
+    return sorted(inv_cikli)
+    
+# =====================================================================@013411=
+# 8. podnaloga
+# Sestavite funkcijo `ciklicni_tip(cikli, dolzina)`, ki vrne ciklični tip
+# permutacije dolžine `dolzina`, predstavljene s seznamom ciklov `cikli`.
+# To je nabor, ki ima toliko elementov, kot je dolžina najdaljšega cikla.
+# Prvi element v tem naboru je število ciklov dolžine 1, drugi element je
+# število ciklov dolžine 2, itd. Če parametra `dolzina` ne podamo, ali pa
+# je ta premajhna, naj bo dolžina enaka največjemu elementu, ki se pojavi
+# v ciklih.
+# 
+#     >>> ciklicni_tip([[7, 3], [4], [5, 2, 1]])
+#     (2, 1, 1)
+#     >>> ciklicni_tip([[7, 3], [4], [5, 2, 1]], 9)
+#     (4, 1, 1)
+# =============================================================================
+def v_vse_cikle(perm):
+    cikli = []
+    cela_perm = []
+    porabljeni = set()
+    for st in range(1, max(perm) + 1):
+        cela_perm.append([st, perm[st - 1]])
+    for st in range(1, max(perm) + 1):
+        cikel = []
+        if st in porabljeni:
+            pass
+        else:
+            while st not in cikel:
+                cikel.append(st)
+                porabljeni.add(st)
+                st = naslednji(perm, st - 2)
+        if len(cikel) >= 1 and cikel not in cikli:
+            cikli.append(cikel)
+    return cikli
+
+
+def ciklicni_tip(cikli, dolzina=0):
+    dolzine = []
+    perm = iz_ciklov(cikli, dolzina)
+    vsi_cikli = v_vse_cikle(perm)
+    for cikel in vsi_cikli:
+        if len(cikel) > len(dolzine):
+            while len(dolzine) < len(cikel) - 1:
+                dolzine.append(0)
+            dolzine.append(1)
+        else:
+            dolzine[len(cikel) - 1] = dolzine[len(cikel) - 1] + 1
+    return tuple(dolzine)
+# =====================================================================@013412=
+# 9. podnaloga
+# Sestavite funkcijo `red`, ki izračuna in vrne red permutacije podane s cikli.
+# Naj bo $\pi$ permutacija. Red permutacije $\pi$ je najmanjše pozitivno
+# število $k$, pri katerem je $\pi^k$ identiteta.
+# 
+# Namig 1: Red permutacije je najmanjši skupni večkratnik dolžin vseh ciklov.
+# 
+# Namig 2: Za poljubni dve naravni števili `a` in `b` velja, da je
+# `gcd(a, b) * lcm(a, b) == a * b`. (Funkcija `gcd` računa največji
+# skupni delitelj, funkcija `lcm` pa najmanjši skupni večkratnik.)
+# 
+#     >>> red([[7, 3], [4], [5, 2, 1]])
+#     6
+# =============================================================================
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def lcm(a, b):
+    return a * b // gcd(a, b)
+
+def red(cikli):
+    r = 1
+    for cikel in cikli:
+        r = lcm(r, len(cikel))
+    return r
 
 
 
@@ -701,12 +856,17 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEwLCJ1c2VyIjoxMDczMH0:1u7DYF:ge6_JYHh7ft_-nnA1w1a5ljVNimIos-YPdtlXysLWk8"
+        ] = "eyJwYXJ0IjoxMzQwNCwidXNlciI6MTA3MzB9:1uEpBK:oBe3pck8PmzlVwgC7-OpIUm8xgQ7e1yUzCQLJ_A112o"
         try:
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Jaka")', 1)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Luka")', 2)
-            Check.equal('kolikokrat_se_pojavi("Jaka,Luka,Miha,Luka", "Tone")', 0)
-            Check.equal('kolikokrat_se_pojavi("Andrej,Andreja,Miha,Luka,Andrej", "Andrej")', 2)
+            Check.equal('je_permutacija([7, 3, 4, 5, 2, 1])', False)
+            Check.equal('je_permutacija([7, 3, 4, 5, 2, 6, 1])', True)
+            Check.equal('je_permutacija([7, 3, 4, 0, 2, 1])', False)
+            Check.equal('je_permutacija([7, 3, 4, 8, 2, 1])', False)
+            Check.equal('je_permutacija([2, 3, 4, 5, 2, 1])', False)
+            Check.equal('je_permutacija([])', True)
+            Check.equal('je_permutacija([1])', True)
+            Check.equal('je_permutacija([1, 2])', True)
+            Check.equal('je_permutacija([2, 1])', True)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -718,18 +878,22 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTExLCJ1c2VyIjoxMDczMH0:1u7DYF:gLUFa-LKaWZpZC6JzjT4sDvBTgypyyY8JOc7-0zUr1I"
+        ] = "eyJwYXJ0IjoxMzQwNSwidXNlciI6MTA3MzB9:1uEpBK:r1G4pR0UfYsNdDTNBckF6Cfjw1SOgy22SdhN03nqJY0"
         try:
-            test_cases = [
-                ("Jaka,Luka,Miha,Luka,Miha,Miha", "imena_koliko.txt", ["Jaka 1", "Luka 2", "Miha 3"]),
-                ("Alen,Alen,Boris,Boris,Ciril,Ciril,Alen,Boris,Cilka", "imena_koliko_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("Jožefa,Jožefa,Jože,Jožefa", "imena_koliko_3.txt", ["Jožefa 3", "Jože 1"]),
-                ("Ciril,Boris,Aleš,Aleš,Boris,Ciril", "imena_koliko_4.txt", ["Ciril 2", "Boris 2", "Aleš 2"]),
-            ]
-            for vhod, f_name, izhod in test_cases:
-                koliko(vhod, f_name)
-                if not Check.out_file(f_name, izhod, encoding='utf-8'):
-                    break # test has failed
+            Check.equal('je_seznam_ciklov([])', True)
+            Check.equal('je_seznam_ciklov([[]])', True)
+            Check.equal('je_seznam_ciklov([[0]])', False)
+            Check.equal('je_seznam_ciklov([[1]])', True)
+            Check.equal('je_seznam_ciklov([[2]])', True)
+            Check.equal('je_seznam_ciklov([[1,3]])', True)
+            Check.equal('je_seznam_ciklov([[3,1]])', True)
+            Check.equal('je_seznam_ciklov([[1,3,5,7,4]])', True)
+            Check.equal('je_seznam_ciklov([[1,3,5,1,4]])', False)
+            Check.equal('je_seznam_ciklov([[8,3,2,4],[5,7,6,1]])', True)
+            Check.equal('je_seznam_ciklov([[8,3,4],[5,7,1]])', True)
+            Check.equal('je_seznam_ciklov([[8,3,4],[5,7,3,1]])', False)
+            Check.equal('je_seznam_ciklov([[8],[7],[1],[3],[6],[4],[2]])', True)
+            Check.equal('je_seznam_ciklov([[8],[7],[1],[3],[6],[1],[2]])', False)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,21 +905,11 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEyLCJ1c2VyIjoxMDczMH0:1u7DYF:8NwjC8VK5629AfCk2_ttA9h46fe2Z1pYq1f2zzYRCSw"
+        ] = "eyJwYXJ0IjoxMzQwNiwidXNlciI6MTA3MzB9:1uEpBK:OrbBVcWy6eopOZvlGbsGnUddn0YrGlyc8dy5yqFTkHs"
         try:
-            test_cases = [
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_izhod.txt", ["Luka 2", "Jaka 1", "Miha 3"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_izhod_2.txt", ["Boris 3",  "Cilka 1", "Alen 3", "Ciril 2"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka:
-                    break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_iz_datoteke(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True  # test had failed
+            Check.equal('urejeni_cikli([[7, 3], [4], [5, 2, 1]])', [[1, 5, 2], [3, 7]])
+            Check.equal('urejeni_cikli([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]])', [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14]])
+            Check.equal('urejeni_cikli([[5, 3, 7, 9, 13], [11, 12, 4, 6], [8, 2, 14], [15, 18]])', [[2, 14, 8], [3, 7, 9, 13, 5], [4, 6, 11, 12], [15, 18]])
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -767,21 +921,91 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTEzLCJ1c2VyIjoxMDczMH0:1u7DYF:SRUsAg-MxTVlxSkD3aRwG3wbrSi3xnYXivhryNaSF2Y"
+        ] = "eyJwYXJ0IjoxMzQwNywidXNlciI6MTA3MzB9:1uEpBK:pPc2PR8W8zn0_EsBFa7Q3WNYOBnNgc_Zrs3Uxh4B7t4"
         try:
-            test_cases = [
-                ("imena_vhod_4.txt", ["Luka,Jaka", "Luka,Miha,Miha", "Miha,Aleš,Aleš"], "imena_urejen_izhod_4.txt", ["Miha 3", "Aleš 2", "Luka 2", "Jaka 1"]),
-                ("imena_vhod.txt", ["Luka,Jaka", "Luka", "Miha", "Miha", "Miha"], "imena_urejen_izhod.txt", ["Miha 3", "Luka 2", "Jaka 1"]),
-                ("imena_vhod_2.txt", ["Boris,Cilka", "Alen,Alen,Boris", "Boris,Ciril,Ciril,Alen"], "imena_urejen_izhod_2.txt", ["Alen 3", "Boris 3", "Ciril 2", "Cilka 1"]),
-                ("imena_vhod_3.txt", ["Jožefa", "Jožefa", "Jožefa"], "imena_urejen_izhod_3.txt", ["Jožefa 3"]),
-            ]
-            napaka = False
-            for in_name, vhod, out_name, izhod in test_cases:
-                if napaka: break
-                with Check.in_file(in_name, vhod, encoding='utf-8'):
-                    koliko_urejen(in_name, out_name)
-                    if not Check.out_file(out_name, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            Check.equal('iz_ciklov([[7, 3], [4], [5, 2, 1]])', [5, 1, 7, 4, 2, 6, 3])
+            Check.equal('iz_ciklov([[7, 3], [4], [5, 2, 1]], 9)', [5, 1, 7, 4, 2, 6, 3, 8, 9])
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQwOCwidXNlciI6MTA3MzB9:1uEpBK:IBRq7Gw27EyH6J_DLkmkW0XiEpdp4-_sGxaev30mmgo"
+        try:
+            Check.equal('v_cikle([5, 1, 7, 4, 2, 6, 3])', [[1, 5, 2], [3, 7]])
+            Check.equal('v_cikle([1, 2, 3, 4, 5, 6, 7])', [])
+            Check.equal('v_cikle([7, 6, 5, 4, 3, 2, 1])', [[1, 7], [2, 6], [3, 5]])
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQwOSwidXNlciI6MTA3MzB9:1uEpBK:PFiZwkLQvAruLSdjO-WW_qqzRz45ExDcJvHiapeWzFs"
+        try:
+            Check.equal('inverz_perm([7, 3, 4, 5, 2, 1, 6])', [6, 5, 2, 3, 4, 7, 1])
+            Check.equal('inverz_perm([1, 2, 3, 4, 5, 6, 7])', [1, 2, 3, 4, 5, 6, 7])
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQxMCwidXNlciI6MTA3MzB9:1uEpBK:QyqQwv0TECJWvpsunkpVkOHO4rQCu26BWVEBFb3HVXU"
+        try:
+            Check.equal('inverz_cikli([[7, 3], [4], [5, 2, 1]])', [[1, 2, 5], [3, 7]])
+            Check.equal('inverz_cikli([[10, 7, 3], [4], [5, 2, 1]])', [[1, 2, 5], [3, 7, 10]])
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQxMSwidXNlciI6MTA3MzB9:1uEpBK:GvsxK0o0F0BTL-tox3D6wNLeRvG0DdoAroA_tjK4VNM"
+        try:
+            Check.equal('ciklicni_tip([[7, 3], [4], [5, 2, 1]], 9)', (4, 1, 1))
+            Check.equal('ciklicni_tip([[7, 3], [4], [5, 2, 1]])', (2, 1, 1))
+            Check.equal('ciklicni_tip([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]])', (0, 7))
+            Check.equal('ciklicni_tip([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]], 21)', (7, 7))
+            Check.equal('ciklicni_tip([[5, 3, 7, 9, 13], [11, 12, 4, 6], [8, 2, 14], [15, 18]])', (4, 1, 1, 1, 1))
+        except TimeoutError:
+            Check.error("Dovoljen čas izvajanja presežen")
+        except Exception:
+            Check.error(
+                "Testi sprožijo izjemo\n  {0}",
+                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
+            )
+
+    if Check.part():
+        Check.current_part[
+            "token"
+        ] = "eyJwYXJ0IjoxMzQxMiwidXNlciI6MTA3MzB9:1uEpBK:k_0I0IXkx0hBdnqaUhGFvAAfx17gx6taqNLIC-RDfeQ"
+        try:
+            Check.equal('red([[7, 3], [4], [5, 2, 1]])', 6)
+            Check.equal('red([[12, 11], [1, 2], [9, 10], [3, 4], [14, 13], [5, 6], [7, 8]])', 2)
+            Check.equal('red([[5, 3, 7, 9, 13], [11, 12, 4, 6], [8, 2, 14], [15, 18]])', 60)
+            Check.equal('red([[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], [22, 23, 24, 25, 26, 27, 28, 29, 30, 31], [32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45]])', 210)
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
