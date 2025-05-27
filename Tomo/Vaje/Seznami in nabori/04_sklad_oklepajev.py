@@ -36,15 +36,20 @@ def naivna_resitev(niz):
 # odstranimo. Na koncu mora biti pomožni seznam prazen.
 # =============================================================================
 def gnezdeni_oklepaji(niz):
-    psez = []
-    for el in niz:
-        if el == "(" or el == "{" or el == "[":
-            psez.append(el)
-        elif el == ")" or el == "}" or el == "]":
-            if el == psez[-1]:
-                psez.pop()
-    return True if psez == [] else False
-
+    oklepaji = '({['
+    zaklepaji = ')}]'
+    seznam = []
+    for znak in niz:
+        if znak in oklepaji:
+            seznam.append(znak)
+        elif znak in zaklepaji:
+            if seznam == []:
+                return False
+            elif seznam[-1] != oklepaji[zaklepaji.index(znak)]:
+                return False
+            else:
+                seznam.pop()
+    return seznam == []
 
 
 

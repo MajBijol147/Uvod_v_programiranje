@@ -4,7 +4,7 @@
 # Definirajte razred `Polinom`, s katerim predstavimo polinom v
 # spremenljivki $x$. Polinom predstavimo s seznamom njegovih koeficientov,
 # kjer je $k$-ti element seznama koeficient pri $x^k$.
-# 
+#
 # Na primer, polinom $x^3 + 2x + 7$ predstavimo s `Polinom([7, 2, 0, 1])`.
 # Razmislite, kaj predstavlja `Polinom([])`. Zadnji koeficient v seznamu
 # mora biti neničelen.
@@ -12,16 +12,16 @@
 # 1. podnaloga
 # Sestavite konstruktor `__init__(self, koef)`, ki nastavi objektu
 # nastavi atribut `koef` (koeficienti polinoma). Zgled:
-# 
+#
 #     >>> p = Polinom([7, 2, 0, 1])
 #     >>> p.koef
 #     [7, 2, 0, 1]
-# 
+#
 # _Pozor_: Če kasneje spremenimo seznam, ki smo ga kot argument podali
 # konstruktorju, se koeficienti polinoma ne smejo premeniti. Seznama,
 # ki smo ga podali kot argument, konstruktor prav tako ne sme spremeninjati.
 # Zgled:
-# 
+#
 #     >>> l = [2, 0, 1]
 #     >>> p = Polinom(l)
 #     >>> l.append(3)
@@ -32,80 +32,84 @@ class Polinom:
     def __init__(self, koef):
         zadnji = len(koef)
         while zadnji > 0 and koef[zadnji - 1] == 0:
-            zadnji -= 1 
+            zadnji -= 1
         self.koef = koef[:zadnji]
-    
-# =====================================================================@001742=
-# 2. podnaloga
-# Sestavite metodo `stopnja`, ki vrne stopnjo polinoma. Zgled:
-# 
-#     >>> p = Polinom([7, 2, 0, 1])
-#     >>> p.stopnja()
-#     3
-# 
-# _Opomba_: Za razpravo glede stopnje ničelnega polinoma glejte [članek
-# na Wikipediji](http://en.wikipedia.org/wiki/Degree_of_a_polynomial#Degree_of_the_zero_polynomial).
-# =============================================================================
+
+    # =====================================================================@001742=
+    # 2. podnaloga
+    # Sestavite metodo `stopnja`, ki vrne stopnjo polinoma. Zgled:
+    #
+    #     >>> p = Polinom([7, 2, 0, 1])
+    #     >>> p.stopnja()
+    #     3
+    #
+    # _Opomba_: Za razpravo glede stopnje ničelnega polinoma glejte [članek
+    # na Wikipediji](http://en.wikipedia.org/wiki/Degree_of_a_polynomial#Degree_of_the_zero_polynomial).
+    # =============================================================================
     def stopnja(self):
         if len(self.koef) != 0:
             return len(self.koef) - 1
         else:
-            return float('-inf')
-# =====================================================================@001743=
-# 3. podnaloga
-# Sestavite metodo `__repr__`, ki vrne niz oblike
-# `'Polinom([a_0, …, a_n])'`, kjer so `a_0, …, a_n` koeficienti polinoma.
-# Zgled:
-# 
-#     >>> p = Polinom([5, 0, 1])
-#     >>> p
-#     Polinom([5, 0, 1])
-# =============================================================================
+            return float("-inf")
+
+    # =====================================================================@001743=
+    # 3. podnaloga
+    # Sestavite metodo `__repr__`, ki vrne niz oblike
+    # `'Polinom([a_0, …, a_n])'`, kjer so `a_0, …, a_n` koeficienti polinoma.
+    # Zgled:
+    #
+    #     >>> p = Polinom([5, 0, 1])
+    #     >>> p
+    #     Polinom([5, 0, 1])
+    # =============================================================================
     def __repr__(self):
         return f"Polinom({self.koef})"
-# =====================================================================@001744=
-# 4. podnaloga
-# Sestavite metodo `__eq__(self, other)` za primerjanje polinomov. Zgled:
-# 
-#     >>> Polinom([3, 2, 0, 1]) == Polinom([3, 2])
-#     False
-#     >>> Polinom([3, 2, 1, 0]) == Polinom([3, 2, 1])
-#     True
-# =============================================================================
+
+    # =====================================================================@001744=
+    # 4. podnaloga
+    # Sestavite metodo `__eq__(self, other)` za primerjanje polinomov. Zgled:
+    #
+    #     >>> Polinom([3, 2, 0, 1]) == Polinom([3, 2])
+    #     False
+    #     >>> Polinom([3, 2, 1, 0]) == Polinom([3, 2, 1])
+    #     True
+    # =============================================================================
     def __eq__(self, other):
         return self.koef == other.koef
-# =====================================================================@001745=
-# 5. podnaloga
-# Sestavite metodo `__call__(self, x)`, ki izračuna in vrne vrednost
-# polinoma v `x`. Pri izračunu vrednosti uporabite Hornerjev algoritem.
-# Če definiramo metodo `__call__`, objekt postane "klicljiv" (tj. lahko
-# ga kličemo, kakor da bi bil funkcija). Zgled:
-# 
-#     >>> p = Polinom([3, 2, 0, 1])
-#     >>> p(1)
-#     6
-#     >>> p(-3)
-#     -30
-#     >>> p(0.725)
-#     4.8310781249999994
-# =============================================================================
+
+    # =====================================================================@001745=
+    # 5. podnaloga
+    # Sestavite metodo `__call__(self, x)`, ki izračuna in vrne vrednost
+    # polinoma v `x`. Pri izračunu vrednosti uporabite Hornerjev algoritem.
+    # Če definiramo metodo `__call__`, objekt postane "klicljiv" (tj. lahko
+    # ga kličemo, kakor da bi bil funkcija). Zgled:
+    #
+    #     >>> p = Polinom([3, 2, 0, 1])
+    #     >>> p(1)
+    #     6
+    #     >>> p(-3)
+    #     -30
+    #     >>> p(0.725)
+    #     4.8310781249999994
+    # =============================================================================
     def __call__(self, x):
-        result = 0  
+        result = 0
         for i in reversed(self.koef):
             result = result * x + i
         return result
-# =====================================================================@001746=
-# 6. podnaloga
-# Sestavite metodo `__add__(self, other)` za seštevanje polinomov. Metoda
-# naj sestavi in vrne nov objekt razreda `Polinom`, ki bo vsota polinomov
-# `self` in `other`. Zgled:
-# 
-#     >>> Polinom([1, 0, 1]) + Polinom([4, 2])
-#     Polinom([5, 2, 1])
-# 
-# _Pozor_: Pri seštevanju se lahko zgodi, da se nekateri koeficienti
-# pokrajšajo: $(x^3 + 2x + 7) + (-x^3 - 2x + 10) = 17$.
-# =============================================================================
+
+    # =====================================================================@001746=
+    # 6. podnaloga
+    # Sestavite metodo `__add__(self, other)` za seštevanje polinomov. Metoda
+    # naj sestavi in vrne nov objekt razreda `Polinom`, ki bo vsota polinomov
+    # `self` in `other`. Zgled:
+    #
+    #     >>> Polinom([1, 0, 1]) + Polinom([4, 2])
+    #     Polinom([5, 2, 1])
+    #
+    # _Pozor_: Pri seštevanju se lahko zgodi, da se nekateri koeficienti
+    # pokrajšajo: $(x^3 + 2x + 7) + (-x^3 - 2x + 10) = 17$.
+    # =============================================================================
     def __add__(self, other):
         i = 0
         nov_koef = []
@@ -118,23 +122,38 @@ class Polinom:
             nov_koef.append(koef)
             i += 1
         return Polinom(nov_koef)
-        
-# =====================================================================@001747=
-# 7. podnaloga
-# Sestavite metodo `__mul__` za množenje polinomov. Metoda
-# naj sestavi in vrne nov objekt razreda `Polinom`, ki bo produkt polinomov.
-# Zgled:
-# 
-#     >>> Polinom([1, 0, 1]) * Polinom([4, 2])
-#     Polinom([4, 2, 4, 2])
-# =============================================================================
+
+    # =====================================================================@001747=
+    # 7. podnaloga
+    # Sestavite metodo `__mul__` za množenje polinomov. Metoda
+    # naj sestavi in vrne nov objekt razreda `Polinom`, ki bo produkt polinomov.
+    # Zgled:
+    #
+    #     >>> Polinom([1, 0, 1]) * Polinom([4, 2])
+    #     Polinom([4, 2, 4, 2])
+    # =============================================================================
+    def __mul__(self, other):
+        pol = []
+        for i, a in enumerate(self.koef):
+            for j, b in enumerate(other.koef):
+                koef = a * b
+                stopnja = i + j
+                if len(pol) < stopnja + 1:
+                    while len(pol) < stopnja + 1:
+                        pol.append(0)
+                    pol.append(koef)
+                else:
+                    pol.insert(stopnja - 1, koef)
+                print(stopnja, pol)
+        return Polinom(pol)
+
 
 # =====================================================================@001748=
 # 8. podnaloga
 # Sestavite metodo `odvod(self, k)`, sestavi in vrne nov polinom, ki bo
 # $k$-ti odvod polinoma `self`. Argument `k` naj ima privzeto vrednost 1.
 # Zgled:
-# 
+#
 #     >>> p = Polinom([5, 1, 4, -3, 5, -1])
 #     >>> p.odvod()
 #     Polinom([1, 8, -9, 20, -5])
@@ -146,12 +165,12 @@ class Polinom:
 # 9. podnaloga
 # Sestavite metodo `__str__`, ki predstavi polinom v čitljivi obliki,
 # kot kaže primer:
-# 
+#
 #     >>> p = Polinom([5, 1, 4, -3, 5, -1])
 #     -x^5 + 5x^4 - 3x^3 + 4x^2 + x + 5
-# 
+#
 # Za niz, ki ga funkcija vrne, naj velja naslednje:
-# 
+#
 # * Polinom je sestavljen iz monomov oblike `ax^k`, kjer je `a` ustrezen
 #   koeficient.
 # * Monomi so med seboj povezani z znaki `+`; pred in za plusom je po en
@@ -169,119 +188,19 @@ class Polinom:
 
 # =====================================================================@027731=
 # 10. podnaloga
-# Sestavite metodi `__iter__` in `__next__`, ki bosta omogočili, da se po 
-# neničelnih koeficientih polinoma sprehodimo kar s `for` zanko. Metodi naj 
-# delujeta tako, da bomo ob sprehodu s for zanko dobili pare 
-# `(koeficient, eksponent)` padajoče glede na eksponent in brez neničelnih 
-# eksponentov. 
-# 
-# Lahko predpostavite, da se po polinomu nikoli ne bomo sprehajali v gnezdeni 
+# Sestavite metodi `__iter__` in `__next__`, ki bosta omogočili, da se po
+# neničelnih koeficientih polinoma sprehodimo kar s `for` zanko. Metodi naj
+# delujeta tako, da bomo ob sprehodu s for zanko dobili pare
+# `(koeficient, eksponent)` padajoče glede na eksponent in brez neničelnih
+# eksponentov.
+#
+# Lahko predpostavite, da se po polinomu nikoli ne bomo sprehajali v gnezdeni
 # zanki.
-# 
+#
 #     >>> p = Polinom([5, 1, 4, -3, 5, 0, -1])
 #     >>> list(p)
 #     >>> [(-1, 6), (5, 4), (-3, 3), (4, 2), (1, 1), (5, 0)]
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ============================================================================@

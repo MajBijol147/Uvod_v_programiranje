@@ -1,18 +1,20 @@
 import csv
 import os
+import requests
+import re
 
 ###############################################################################
 # Najprej definirajmo nekaj pomožnih orodij za pridobivanje podatkov s spleta.
 ###############################################################################
 
 # definirajte URL glavne strani bolhe za oglase z mačkami
-cats_frontpage_url = 'http://www.bolha.com/zivali/male-zivali/macke/'
+cats_frontpage_url = "http://www.bolha.com/zivali/male-zivali/macke/"
 # mapa, v katero bomo shranili podatke
-cat_directory = 'TODO'
+cat_directory = "podatki"
 # ime datoteke v katero bomo shranili glavno stran
-frontpage_filename = 'TODO'
+frontpage_filename = "macke.html"
 # ime CSV datoteke v katero bomo shranili podatke
-csv_filename = 'TODO'
+csv_filename = "macke.csv"
 
 
 def download_url_to_string(url):
@@ -21,13 +23,19 @@ def download_url_to_string(url):
     """
     try:
         # del kode, ki morda sproži napako
-        page_content = 'TODO'
-    except 'TODO':
+        # #page_content = requests.get(url).text ##
+        response = requests.get(url)
+        if response.status_code != 200:
+            print("Neuspešno zajemanje podatkov")
+            return None
+        page_content = response.text
+    except requests.exceptions.RequestException:
         # koda, ki se izvede pri napaki
         # dovolj je če izpišemo opozorilo in prekinemo izvajanje funkcije
-        raise NotImplementedError()
+        print("Spletna stran ni dosegljiva")
+        return None
     # nadaljujemo s kodo če ni prišlo do napake
-    raise NotImplementedError()
+    return page_content
 
 
 def save_string_to_file(text, directory, filename):
@@ -37,7 +45,7 @@ def save_string_to_file(text, directory, filename):
     """
     os.makedirs(directory, exist_ok=True)
     path = os.path.join(directory, filename)
-    with open(path, 'w', encoding='utf-8') as file_out:
+    with open(path, "w", encoding="utf-8") as file_out:
         file_out.write(text)
     return None
 
@@ -48,7 +56,10 @@ def save_string_to_file(text, directory, filename):
 def save_frontpage(page, directory, filename):
     """Funkcija shrani vsebino spletne strani na naslovu "page" v datoteko
     "directory"/"filename"."""
-    raise NotImplementedError()
+    text = download_url_to_string(page)
+    text = read_file_to_string(directory, "stran.html")
+    save_string_to_file(text, directory, filename)
+    return text
 
 
 ###############################################################################
@@ -57,8 +68,12 @@ def save_frontpage(page, directory, filename):
 
 
 def read_file_to_string(directory, filename):
-    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz."""
-    raise NotImplementedError()
+    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz"""
+    os.makedirs(directory, exist_ok=True)
+    path = os.path.join(directory, filename)
+    with open(path, "r", encoding="utf-8") as file_in:
+        text = file_in.read()
+    return text
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
@@ -70,7 +85,9 @@ def read_file_to_string(directory, filename):
 def page_to_ads(page_content):
     """Funkcija poišče posamezne oglase, ki se nahajajo v spletni strani in
     vrne seznam oglasov."""
-    raise NotImplementedError()
+    return re.findall(
+        r'<article class="entity-body cf">.*?</article>', page_content, flags=re.DOTALL
+    )
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
@@ -80,7 +97,22 @@ def page_to_ads(page_content):
 def get_dict_from_ad_block(block):
     """Funkcija iz niza za posamezen oglasni blok izlušči podatke o imenu, ceni
     in opisu ter vrne slovar, ki vsebuje ustrezne podatke."""
-    raise NotImplementedError()
+    ime = re.search(r'<h3 class="entity-title"><a .*>(.*)/a></h3>', block)
+    lokacija = re.search(r"Lokacija: </span>(.*)<br />", block)
+    datum = re.search(r'pubdate="pubdate">(.*)\.</time>', block)
+    cena = re.search(
+        r'<strong class="price price--hrk">(.*)</strong>', block, flags=re.DOTALL
+    )
+    if ime == None or lokacija == None or datum == None or cena == None:
+        return None
+    return {
+        "ime": ime.group(1),
+        "lokacija": lokacija.group(1),
+        "datum": datum.group(1),
+        "cena": re.sub(
+            r'&nbsp;<span class="currency">€</span>', " €", cena.group(1).strip()
+        ),
+    }
 
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
@@ -91,7 +123,10 @@ def get_dict_from_ad_block(block):
 def ads_from_file(filename, directory):
     """Funkcija prebere podatke v datoteki "directory"/"filename" in jih
     pretvori (razčleni) v pripadajoč seznam slovarjev za vsak oglas posebej."""
-    raise NotImplementedError()
+    page_content = read_file_to_string(directory, filename)
+    blocks = page_to_ads(page_content)
+    ads = [get_dict_from_ad_block(block) for block in blocks]
+    return [ad for ad in ads if ad != None]
 
 
 ###############################################################################
@@ -106,7 +141,7 @@ def write_csv(fieldnames, rows, directory, filename):
     """
     os.makedirs(directory, exist_ok=True)
     path = os.path.join(directory, filename)
-    with open(path, 'w', encoding='utf-8') as csv_file:
+    with open(path, "w", encoding="utf-8", newline="") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
@@ -128,10 +163,12 @@ def write_cat_ads_to_csv(ads, directory, filename):
     # Prednost je v tem, da ga lahko pod določenimi pogoji izklopimo v
     # produkcijskem okolju
     assert ads and (all(j.keys() == ads[0].keys() for j in ads))
-    raise NotImplementedError()
+    fieldnames = list(ads[0].keys())
+    write_csv(fieldnames, ads, directory, filename)
 
 
 # Celoten program poženemo v glavni funkciji
+
 
 def main(redownload=True, reparse=True):
     """Funkcija izvede celoten del pridobivanja podatkov:
@@ -140,19 +177,22 @@ def main(redownload=True, reparse=True):
     3. Podatke shrani v csv datoteko
     """
     # Najprej v lokalno datoteko shranimo glavno stran
+    if redownload:
+        save_frontpage(cats_frontpage_url, cat_directory, frontpage_filename)
 
     # Iz lokalne (html) datoteke preberemo podatke
 
     # Podatke preberemo v lepšo obliko (seznam slovarjev)
 
     # Podatke shranimo v csv datoteko
+    if reparse:
+        ads = ads_from_file(frontpage_filename, cat_directory)
+        write_cat_ads_to_csv(ads, cat_directory, csv_filename)
 
     # Dodatno: S pomočjo parametrov funkcije main omogoči nadzor, ali se
     # celotna spletna stran ob vsakem zagon prenese (četudi že obstaja)
     # in enako za pretvorbo
 
-    raise NotImplementedError()
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
