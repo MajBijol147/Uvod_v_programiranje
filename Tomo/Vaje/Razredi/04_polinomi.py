@@ -28,6 +28,16 @@
 #     >>> p.koef
 #     [2, 0, 1]
 # =============================================================================
+def dodatek(x, k):
+    rezultat = 1
+    if k > x:
+        return 1
+    else:
+        for n in range(x, x - k, -1):
+            rezultat *= n
+    return rezultat
+
+
 class Polinom:
     def __init__(self, koef):
         zadnji = len(koef)
@@ -133,74 +143,155 @@ class Polinom:
     #     Polinom([4, 2, 4, 2])
     # =============================================================================
     def __mul__(self, other):
-        pol = []
+        polinom = []
         for i, a in enumerate(self.koef):
             for j, b in enumerate(other.koef):
-                koef = a * b
-                stopnja = i + j
-                if len(pol) < stopnja + 1:
-                    while len(pol) < stopnja + 1:
-                        pol.append(0)
-                    pol.append(koef)
+                zmnozen_koef = a * b
+                zmnozena_stopnja = i + j
+                if len(polinom) <= zmnozena_stopnja:
+                    polinom.insert(zmnozena_stopnja, zmnozen_koef)
                 else:
-                    pol.insert(stopnja - 1, koef)
-                print(stopnja, pol)
-        return Polinom(pol)
+                    polinom[zmnozena_stopnja] += zmnozen_koef
+        return Polinom(polinom)
 
+    # =====================================================================@001748=
+    # 8. podnaloga
+    # Sestavite metodo `odvod(self, k)`, sestavi in vrne nov polinom, ki bo
+    # $k$-ti odvod polinoma `self`. Argument `k` naj ima privzeto vrednost 1.
+    # Zgled:
+    #
+    #     >>> p = Polinom([5, 1, 4, -3, 5, -1])
+    #     >>> p.odvod()
+    #     Polinom([1, 8, -9, 20, -5])
+    #     >>> p.odvod(2)
+    #     Polinom([8, -18, 60, -20])
+    # =============================================================================
+    def odvod(self, k=1):
+        if k >= len(self.koef):
+            return Polinom([0])
+        else:
+            odvajan_polinom = self.koef[k:]
+        for i, a in enumerate(odvajan_polinom):
+            odvajan_polinom[i] = odvajan_polinom[i] * dodatek(i + k, k)
+        return Polinom(odvajan_polinom)
 
-# =====================================================================@001748=
-# 8. podnaloga
-# Sestavite metodo `odvod(self, k)`, sestavi in vrne nov polinom, ki bo
-# $k$-ti odvod polinoma `self`. Argument `k` naj ima privzeto vrednost 1.
-# Zgled:
-#
-#     >>> p = Polinom([5, 1, 4, -3, 5, -1])
-#     >>> p.odvod()
-#     Polinom([1, 8, -9, 20, -5])
-#     >>> p.odvod(2)
-#     Polinom([8, -18, 60, -20])
-# =============================================================================
+    # =====================================================================@001749=
+    # 9. podnaloga
+    # Sestavite metodo `__str__`, ki predstavi polinom v čitljivi obliki,
+    # kot kaže primer:
+    #
+    #     >>> p = Polinom([5, 1, 4, -3, 5, -1])
+    #     -x^5 + 5x^4 - 3x^3 + 4x^2 + x + 5
+    #
+    # Za niz, ki ga funkcija vrne, naj velja naslednje:
+    #
+    # * Polinom je sestavljen iz monomov oblike `ax^k`, kjer je `a` ustrezen
+    #   koeficient.
+    # * Monomi so med seboj povezani z znaki `+`; pred in za plusom je po en
+    #   presledek.
+    # * Namesto `x^1` bomo pisali samo `x`, `x^0` pa bomo izpustili in pisali
+    #   samo koeficient.
+    # * Če je koeficient 1, bomo namesto `1x^k` pisali `x^k`. Če je -1, bomo
+    #   namesto `-1x^k` pisali `-x^k`. To ne velja za prosti člen.
+    # * Če je koeficient negativen, bomo pri združevanju monomov uporabili
+    #   znak `-` namesto znaka `+`. Torej, namesto `ax^m + -bx^n` bomo pisali
+    #   `ax^m - bx^n`. To ne velja za vodilni člen.
+    # * Če je koeficient 0, bomo monom izpustili. To pravilo ne velja za
+    #   ničelni polinom.
+    # =============================================================================
+    # posebni primeri so: stopnje = 0, 1, max; koef = 1, -1, 0, predznak = -
+    def __str__(self):
+        pisani_polinom = ""
+        if self.koef == []:
+            return "0"
+        else:
+            for i, k in enumerate(self.koef):
+                monom = ""
+                if k == 0:
+                    pass
+                elif i == 0:
+                    if k < 0:
+                        monom = f" - {-1*k}"
+                    if k > 0:
+                        monom = f" + {k}"
+                elif i == 1:
+                    if i + 1 == len(self.koef):
+                        if k < 0:
+                            if k == -1:
+                                monom = "-x"
+                            else:
+                                monom = f"-{-1*k}x"
+                        elif k > 0:
+                            if k == 1:
+                                monom = "x"
+                            else:
+                                monom = f"{k}x"
+                    else:
+                        if k < 0:
+                            if k == -1:
+                                monom = " - x"
+                            else:
+                                monom = f" - {-1*k}x"
+                        elif k > 0:
+                            if k == 1:
+                                monom = " + x"
+                            else:
+                                monom = f" + {k}x"
+                elif i == len(self.koef) - 1:
+                    if k < 0:
+                        if k == -1:
+                            monom = f"-x^{i}"
+                        else:
+                            monom = f"{k}x^{i}"
+                    elif k > 0:
+                        if k == 1:
+                            monom = f"x^{i}"
+                        else:
+                            monom = f"{k}x^{i}"
+                else:
+                    if k < 0:
+                        if k == -1:
+                            monom = f" - x^{i}"
+                        else:
+                            monom = f" - {-1*k}x^{i}"
+                    elif k > 0:
+                        if k == 1:
+                            monom = f" + x^{i}"
+                        else:
+                            monom = f" + {k}x^{i}"
+                pisani_polinom = monom + pisani_polinom
+            return pisani_polinom
 
-# =====================================================================@001749=
-# 9. podnaloga
-# Sestavite metodo `__str__`, ki predstavi polinom v čitljivi obliki,
-# kot kaže primer:
-#
-#     >>> p = Polinom([5, 1, 4, -3, 5, -1])
-#     -x^5 + 5x^4 - 3x^3 + 4x^2 + x + 5
-#
-# Za niz, ki ga funkcija vrne, naj velja naslednje:
-#
-# * Polinom je sestavljen iz monomov oblike `ax^k`, kjer je `a` ustrezen
-#   koeficient.
-# * Monomi so med seboj povezani z znaki `+`; pred in za plusom je po en
-#   presledek.
-# * Namesto `x^1` bomo pisali samo `x`, `x^0` pa bomo izpustili in pisali
-#   samo koeficient.
-# * Če je koeficient 1, bomo namesto `1x^k` pisali `x^k`. Če je -1, bomo
-#   namesto `-1x^k` pisali `-x^k`. To ne velja za prosti člen.
-# * Če je koeficient negativen, bomo pri združevanju monomov uporabili
-#   znak `-` namesto znaka `+`. Torej, namesto `ax^m + -bx^n` bomo pisali
-#   `ax^m - bx^n`. To ne velja za vodilni člen.
-# * Če je koeficient 0, bomo monom izpustili. To pravilo ne velja za
-#   ničelni polinom.
-# =============================================================================
+    # =====================================================================@027731=
+    # 10. podnaloga
+    # Sestavite metodi `__iter__` in `__next__`, ki bosta omogočili, da se po
+    # neničelnih koeficientih polinoma sprehodimo kar s `for` zanko. Metodi naj
+    # delujeta tako, da bomo ob sprehodu s for zanko dobili pare
+    # `(koeficient, eksponent)` padajoče glede na eksponent in brez neničelnih
+    # eksponentov.
+    #
+    # Lahko predpostavite, da se po polinomu nikoli ne bomo sprehajali v gnezdeni
+    # zanki.
+    #
+    #     >>> p = Polinom([5, 1, 4, -3, 5, 0, -1])
+    #     >>> list(p)
+    #     >>> [(-1, 6), (5, 4), (-3, 3), (4, 2), (1, 1), (5, 0)]
+    # =============================================================================
+    def __iter__(self):
+        # Ze vrnjen element
+        self.indeks_iteratorja = len(self.koef)
+        return self
 
-# =====================================================================@027731=
-# 10. podnaloga
-# Sestavite metodi `__iter__` in `__next__`, ki bosta omogočili, da se po
-# neničelnih koeficientih polinoma sprehodimo kar s `for` zanko. Metodi naj
-# delujeta tako, da bomo ob sprehodu s for zanko dobili pare
-# `(koeficient, eksponent)` padajoče glede na eksponent in brez neničelnih
-# eksponentov.
-#
-# Lahko predpostavite, da se po polinomu nikoli ne bomo sprehajali v gnezdeni
-# zanki.
-#
-#     >>> p = Polinom([5, 1, 4, -3, 5, 0, -1])
-#     >>> list(p)
-#     >>> [(-1, 6), (5, 4), (-3, 3), (4, 2), (1, 1), (5, 0)]
-# =============================================================================
+    def __next__(self):
+        # Pazimo, da ne pademo čez
+        while self.indeks_iteratorja:
+            self.indeks_iteratorja -= 1
+            # Če je koeficient neničelen, ga vrnemo
+            if self.koef[self.indeks_iteratorja]:
+                return (self.koef[self.indeks_iteratorja], self.indeks_iteratorja)
+
+        # Prišli smo do konca
+        raise StopIteration
 
 
 # ============================================================================@
