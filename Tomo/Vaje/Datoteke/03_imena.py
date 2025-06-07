@@ -4,7 +4,7 @@
 # V neki datoteki, ki ima lahko več vrstic, so zapisana imena. Znotraj
 # posamične vrstice so imena ločena z vejicami (brez presledkov). Primer take
 # datoteke:
-# 
+#
 #     Jaka,Peter,Miha,Peter,Anja
 #     Franci,Roman,Renata,Jožefa
 #     Pavle,Tadeja,Arif,Filip,Gašper
@@ -12,55 +12,55 @@
 # 1. podnaloga
 # Sestavite funkcijo `kolikokrat_se_pojavi(niz, ime)`, ki vrne število
 # pojavitev imena `ime` v nizu imen `niz`.
-# 
+#
 #     >>> kolikokrat_se_pojavi('Alojz,Samo,Peter,Alojz,Franci', 'Alojz')
 #     2
 # =============================================================================
 def kolikokrat_se_pojavi(niz, ime):
     return niz.split(",").count(ime)
+
+
 # =====================================================================@001511=
 # 2. podnaloga
 # Sestavite funkcijo `koliko(niz, datoteka)`, ki na izhodno datoteko za vsako
 # ime zapiše, kolikokrat se pojavi v nizu.
-# 
+#
 # Na primer, če je niz enak `'Jaka,Luka,Miha,Luka'`, naj funkcija v izhodno
 # datoteko zapiše
-# 
+#
 #     Jaka 1
 #     Luka 2
 #     Miha 1
-# 
+#
 # Pozor: Imena naj bodo izpisana v takem vrstnem redu, kakor si sledijo njihove
 # prve pojavitve v nizu.
 # =============================================================================
 def koliko(niz, datoteka):
     imena = niz.split(",")
-    with open(datoteka, 'w', encoding='UTF-8') as dat:
+    with open(datoteka, "w", encoding="UTF-8") as dat:
         for i, ime in enumerate(imena):
             if ime in imena[:i]:
                 pass
             else:
                 print(f"{ime} {imena.count(ime)}", file=dat)
-    
-            
+
+
 # =====================================================================@001512=
 # 3. podnaloga
 # Sestavite funkcijo `koliko_iz_datoteke(vhodna, izhodna)`, ki naj naredi isto
 # kot funkcija `koliko`, le da podatke prebere iz datoteke. Torej, na izhodno
 # datoteko naj za vsako ime zapiše, kolikokrat se pojavi v vhodni datoteki.
-# 
+#
 # Pozor: Vhodna datoteka ima lahko več vrstic. Imena izpišite v enakem vrstnem
 # redu, kot si sledijo njihove prve pojavitve v vhodni datoteki.
 # =============================================================================
 def koliko_iz_datoteke(vh, izh):
-    imena = ""
-    with open(vh, encoding='UTF-8') as vhod:
+    with open(vh, encoding="UTF-8") as vhod:
         besedilo = vhod.read()
-        for vrstica in besedilo:
-            imena = imena + vrstica
-        imena.replace("\n", ",")
-    print(imena)
+        imena = str.join(",", besedilo.splitlines())
     return koliko(imena, izh)
+
+
 # =====================================================================@001513=
 # 4. podnaloga
 # Sestavite funkcijo `koliko_urejen`, ki sprejme imeni vhodne in izhodne
@@ -68,121 +68,41 @@ def koliko_iz_datoteke(vh, izh):
 # vhodni datoteki. Imena naj bodo urejena padajoče po frekvenci pojavitev.
 # Imena, ki imajo enako frekvenco, naj bodo nadalje urejena leksikografsko (tj.
 # po abecednem vrstnem redu).
-# 
+#
 # Primer: Če je na datoteki imena_vhod.txt vsebina
-# 
+#
 #     Luka,Jaka
 #     Luka,Miha,Miha
 #     Miha,Aleš,Aleš
-# 
+#
 # naj bo po klicu funkcije `koliko_urejen('imena_vhod.txt', 'imena_izhod.txt')`
 # na datoteki imena_izhod.txt naslednja vsebina:
-# 
+#
 #     Miha 3
 #     Aleš 2
 #     Luka 2
 #     Jaka 1
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def navadno_koliko(niz):
+    imena = niz.split(",")
+    rez = []
+    for i, ime in enumerate(imena):
+        if ime in imena[:i]:
+            pass
+        else:
+            rez.append((-imena.count(ime), ime))
+    return rez
+
+
+def koliko_urejen(vhod, izhod):
+    with open(vhod, encoding="UTF-8") as vh:
+        besedilo = vh.read()
+        imena = str.join(",", besedilo.splitlines())
+        prešteta_imena = navadno_koliko(imena)
+        prešteta_imena.sort()
+        with open(izhod, "w", encoding="UTF-8") as iz:
+            for st, ime in prešteta_imena:
+                print(ime, -st, file=iz)
 
 
 # ============================================================================@
