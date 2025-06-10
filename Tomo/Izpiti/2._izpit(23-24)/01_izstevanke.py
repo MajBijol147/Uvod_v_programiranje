@@ -1,206 +1,80 @@
 # =============================================================================
-# HTML datoteke
-# =====================================================================@001506=
+# Izštevanke
+#
+# Ta naloga je prirejena po popularni otroški igri. Igralce razporedimo v krog,
+# izberemo nekoga, pri katerem se bo igra začela, nato pa ob recitiranju izštevanke
+# pri vsaki naslednji besedi pokažemo na naslednjega igralca v krogu. Igralec,
+# pri katerem končamo, je izločen iz kroga, igro pa nadaljujemo pri naslednjem
+# igralcu v krogu.
+# =====================================================================@040227=
 # 1. podnaloga
-# Sestavite funkcijo `html2txt(vhodna, izhodna)`, ki bo vsebino datoteke
-# z imenom `vhodna` prepisala v datoteko z imenom `izhodna`, pri tem pa
-# odstranila vse značke.
+# Imena igralcev zapišimo v seznam v takem vrstnem redu, kot so postavljeni
+# v krogu. Predpostavimo lahko, da so imena igralcev paroma različna.
+# Sestavite funkcijo `izlocen`, ki sprejme seznam igralcev, ime igralca,
+# pri katerem začnemo, in število besed v izštevanki, vrne pa ime izločenega
+# igralca.
 #
-# Značke se začnejo z znakom `'<'` in končajo z znakom `'>'`. Pozor: Začetek
-# in konec značke nista nujno v isti vrstici.
-#
-# Na primer, če je v datoteki vreme.html zapisano:
-#
-#     <h1>Napoved vremena</h1>
-#     <p>Jutri bo <i><b>lepo</b></i> vreme.
-#     Več o vremenu preberite <a
-#     href="http://www.arso.gov.si/">tukaj</a>.</p>
-#
-# bo po klicu `html2txt('vreme.html', 'vreme.txt')` v datoteki vreme.txt
-# zapisano:
-#
-#     Napoved vremena
-#     Jutri bo lepo vreme.
-#     Več o vremenu preberite tukaj.
+#     >>> izlocen(['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Cilka', 4)
+#     'Blaž'
 # =============================================================================
-def html2txt(vhod, izhod):
-    znacka = False
-    with open(vhod, encoding="utf-8") as vh:
-        with open(izhod, "w", encoding="utf-8") as iz:
-            for vrstica in vh:
-                txt_vrstica = ""
-                for znak in vrstica:
-                    if znak in "<>":
-                        znacka = not znacka
-                    elif not znacka:
-                        txt_vrstica += znak
-                print(txt_vrstica, file=iz, end="")
+def izlocen(sez, ime, st):
+    indeks = sez.index(ime)
+    indeks = (indeks + st - 1) % len(sez)
+    return sez[indeks]
+    # zac_ind = sez.index(ime)
+    # if zac_ind + st > len(sez) - 1:
+    #    while st > len(sez):
+    #        st -= len(sez)
+    #    return sez[st - (len(sez) - zac_ind) - 1]
+    # elif st == 1:
+    #    return sez[zac_ind]
+    # else:
+    #    return sez[zac_ind + st]
 
 
-# =====================================================================@001507=
+# =====================================================================@040228=
 # 2. podnaloga
-# Sestavite funkcijo `tabela(ime_vhodne, ime_izhodne)`, ki bo podatke
-# iz vhodne datoteke zapisala v obliki HTML tabele v izhodno datoteko.
+# Na voljo imamo več različnih izštevank. Vsakič uporabimo drugo, če nam jih zmanjka,
+# pa jih začnemo uporabljati še enkrat v istem vrstnem redu. Sestavite funkcijo
+# `zmagovalec`, ki sprejme seznam igralcev, ime igralca, pri katerem začnemo, in
+# seznam števil besed v izštevankah, ki jih bomo uporabili. Funkcija naj vrne
+# ime igralca, ki na koncu ostane edini v krogu.
 #
-# V vhodni datoteki so podatki shranjeni po vrsticah ter ločeni z vejicami.
-# Na primer, če je v datoteki tabela.txt zapisano:
-#
-#     ena,dva,tri
-#     17,52,49.4,6
-#     abc,xyz
-#
-# bo po klicu `tabela('tabela.txt', 'tabela.html')` v datoteki tabela.html
-# zapisana naslednja vsebina:
-#
-#     <table>
-#       <tr>
-#         <td>ena</td>
-#         <td>dva</td>
-#         <td>tri</td>
-#       </tr>
-#       <tr>
-#         <td>17</td>
-#         <td>52</td>
-#         <td>49.4</td>
-#         <td>6</td>
-#       </tr>
-#       <tr>
-#         <td>abc</td>
-#         <td>xyz</td>
-#       </tr>
-#     </table>
-#
-# Pozor: Pazi na zamik (število presledkov na začetku vrstic) v izhodni
-# datoteki.
+#     >>> zmagovalec(['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Cilka', [4, 3])
+#     'Cilka'
 # =============================================================================
-def tabela(vhod, izhod):
-    with open(vhod, encoding="utf-8") as podatki:
-        with open(izhod, "w", encoding="utf-8") as tabela:
-            print("<table>", file=tabela)
-            for vrstica in podatki:
-                print("  <tr>", file=tabela)
-                stolpci = vrstica.strip().split(",")
-                for stolpec in stolpci:
-                    print(f"    <td>{stolpec}</td>", file=tabela)
-                print("  </tr>", file=tabela)
-            print("</table>", file=tabela)
+def zmagovalec(sez, ime, dolzine):
+    k = -1
+    while len(sez) > 1:
+        k += 1
+        i = k % len(dolzine)
+        print(ime, sez, dolzine, k, i, len(dolzine))
+        if ime not in sez:
+            ime = sez[0]
+            sez.remove(izlocen(sez, ime, dolzine[i]))
+        else:
+            sez.remove(izlocen(sez, ime, dolzine[i]))
+    return sez[0]
+    # napaka v rešitvah? izločanje se začne z osebo eno naprej od začetne,
+    # ne z začetno kot pri 1. podnalogi?
 
 
-# =====================================================================@001508=
+# =====================================================================@040229=
 # 3. podnaloga
-# Sestavite funkcijo `seznami(ime_vhodne, ime_izhodne)`, ki bo podatke
-# iz vhodne datoteke zapisala v izhodno datoteko v obliki neurejenega
-# seznama. V vhodni datoteki se vrstice seznamov začnejo z zvezdico.
+# Zanima nas, pri katerem igralcu naj začnemo igro, da bo zmagal naš favorit.
+# Sestavite funkcijo `pri_kom_zaceti`, ki sprejme seznam igralcev, ime našega
+# favorita in seznam števil besed v izštevankah, ki jih bomo uporabili. Funkcija
+# naj vrne ime igralca, pri katerem moramo začeti igro, da bo zmagal naš favorit.
 #
-# Na primer, če je v datoteki seznami.txt zapisano:
-#
-#     V trgovini moram kupiti:
-#     * jajca,
-#     * kruh,
-#     * moko.
-#     Na poti nazaj moram:
-#     * obiskati sosedo.
-#
-# bo po klicu funkcije `seznami('seznami.txt', 'seznami.html')` v datoteki
-# seznami.html naslednja vsebina:
-#
-#     V trgovini moram kupiti:
-#     <ul>
-#       <li>jajca,</li>
-#       <li>kruh,</li>
-#       <li>moko.</li>
-#     </ul>
-#     Na poti nazaj moram:
-#     <ul>
-#       <li>obiskati sosedo.</li>
-#     </ul>
+#     >>> pri_kom_zaceti(['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Blaž', [2, 4])
+#     'Cilka'
 # =============================================================================
-def seznami(vhod, izhod):
-    seznam = False
-    with open(vhod, encoding="utf-8") as vh:
-        with open(izhod, "w", encoding="utf-8") as iz:
-            for vrstica in vh:
-                if vrstica[0] == "*":
-                    if not seznam:
-                        seznam = True
-                        print("<ul>", file=iz)
-                    print(f"  <li>{vrstica[2:].strip()}</li>", file=iz)
-                else:
-                    if seznam:
-                        seznam = False
-                        print("</ul>", file=iz)
-                    print(vrstica, file=iz, end="")
-            if seznam:
-                print("</ul>", file=iz)
+def pri_kom_zaceti(sez, ime, dolzine):
+    for oseba in sez:
+        if zmagovalec(sez, oseba, dolzine) == ime:
+            return oseba
 
 
-# =====================================================================@001509=
-# 4. podnaloga
-# Sestavite funkcijo `gnezdeni_seznami(ime_vhodne, ime_izhodne)`, ki bo
-# podatke iz vhodne datoteke zapisala v izhodno datoteko v obliki neurejenega
-# gnezdenega seznama. V vhodni datoteki je vsak element seznama v svoji
-# vrstici, zamik pred elementom pa določa, kako globoko je element gnezden.
-# Zamik bo vedno večkratnik števila 2.
-#
-# Na primer, če je v datoteki seznami.txt zapisano:
-#
-#     zivali
-#       sesalci
-#         slon
-#       ptiči
-#         sinička
-#     rastline
-#       sobne rastline
-#         difenbahija
-#
-# bo po klicu `gnezdeni_seznami('seznami.txt', 'seznami.html')` v datoteki
-# seznami.html zapisano:
-#
-#     <ul>
-#       <li>živali
-#         <ul>
-#           <li>sesalci
-#             <ul>
-#               <li>slon
-#             </ul>
-#           <li>ptiči
-#             <ul>
-#               <li>sinička
-#             </ul>
-#         </ul>
-#       <li>rastline
-#         <ul>
-#           <li>sobne rastline
-#             <ul>
-#               <li>difenbahija
-#             </ul>
-#         </ul>
-#     </ul>
-#
-# Značk `<li>` ne zapirajte.
-# =============================================================================
-def gnezdeni_seznami(ime_vhodne, ime_izhodne):
-    nivo = 0
-    zamik = 2
-    with open(ime_vhodne, encoding='utf-8') as vhodna:
-        with open(ime_izhodne, 'w', encoding='utf-8') as izhodna:
-            for vrstica in vhodna:
-                prvi = 0 # Prvi znak, ki ni presledek.
-                while vrstica[prvi] == ' ':
-                    prvi += 1
-                n = prvi // zamik + 1
-                vrstica = vrstica.strip()
-                if n > nivo:
-                    print(2*zamik*nivo*' ' + '<ul>', file=izhodna)
-                    nivo += 1
-                while n < nivo:
-                    nivo -= 1
-                    print(2*zamik*nivo*' ' + '</ul>', file=izhodna)
-                print((2*zamik*nivo - zamik)*' ' + '<li>' + vrstica, file=izhodna)
-            while nivo > 0:
-                nivo -= 1
-                print(2*zamik*nivo*' ' + '</ul>', file=izhodna)
-                
 # ============================================================================@
 # fmt: off
 "Če vam Python sporoča, da je v tej vrstici sintaktična napaka,"
@@ -717,19 +591,20 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTA2LCJ1c2VyIjoxMDczMH0:1uOf8r:66ModAGDjfZY2CmXcI1nDu6YUwsd64D4tg6_ITxkeC4"
+        ] = "eyJwYXJ0Ijo0MDIyNywidXNlciI6MTA3MzB9:1uOvSh:0L7j3410gtjz3cbRcytQpn_kxBEpQbU7K2IW60TNv-0"
         try:
-            test_data = [
-                ("napoved_vremena.html", ["<h1>Napoved vremena</h1>", "<p>Jutri bo <i><b>lepo</b></i> vreme.", "Vec o vremenu preberite <a", 'href="napoved.html">tukaj</a>.</p>'],
-                 "napoved_vremena.txt", ["Napoved vremena", "Jutri bo lepo vreme.", "Vec o vremenu preberite tukaj."]),
+            testi = [
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Cilka', 4, 'Blaž'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Blaž', 3, 'Dunja'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Cilka', 16, 'Blaž'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Cilka', 2, 'Dunja'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Cilka', 1, 'Cilka'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Andrej', 5, 'Andrej'),
+                (['A', 'B', 'C', 'E', 'D', 'F', 'H'], 'C', 20, 'A'),
             ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    html2txt(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            for igralci, prvi, dolzina, rez in testi:
+                if not Check.equal(f"izlocen({igralci}, {prvi!r}, {dolzina})", rez):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,22 +616,21 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTA3LCJ1c2VyIjoxMDczMH0:1uOf8r:WBMX5pxxo587oEnI56S8AQGnLPVQh9TcETo1dlIVQyY"
+        ] = "eyJwYXJ0Ijo0MDIyOCwidXNlciI6MTA3MzB9:1uOvSh:LIEg5QN51_IDtd409t3DKAl3G6eBlQgq0wwZTuYZN9s"
         try:
-            test_data = [
-                ("tabela.txt", ["ena,dva,tri", "17,52,49.4,6", "abc,xyz"], "tabela.html",
-                 ["<table>", "  <tr>", "    <td>ena</td>", "    <td>dva</td>", "    <td>tri</td>",
-                  "  </tr>", "  <tr>", "    <td>17</td>", "    <td>52</td>", "    <td>49.4</td>",
-                  "    <td>6</td>", "  </tr>", "  <tr>", "    <td>abc</td>", "    <td>xyz</td>",
-                  "  </tr>", "</table>"]),
+            testi = [
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Cilka', [4, 3], 'Cilka'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Blaž', [2, 1, 1], 'Blaž'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Dunja', [1, 2, 3], 'Andrej'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Dunja', [2], 'Dunja'),
+                (['Solist'], 'Solist', [], 'Solist'),
+                (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'], 'B', [37, 123, 21, 41, 634, 43, 4, 4, 4625, 123, 99], 'K'),
+                (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'], 'K', [37, 123, 21, 41, 634, 43, 4, 4, 4625, 123, 99], 'H'),
+                (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'], 'E', [1, 2, 3], 'L'),
             ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    tabela(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            for igralci, prvi, dolzine, rez in testi:
+                if not Check.equal(f"zmagovalec({igralci}, {prvi!r}, {dolzine})", rez):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -768,46 +642,19 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTA4LCJ1c2VyIjoxMDczMH0:1uOf8r:w6rc4fopr_ZWh7Xc04KQpHMT9VG3JoCHzdKozNrFy9s"
+        ] = "eyJwYXJ0Ijo0MDIyOSwidXNlciI6MTA3MzB9:1uOvSh:a_El8QxkPHLLidUaOcGFcQ7eSzTBHMkRdQv0e0gzvuE"
         try:
-            test_data = [
-                ("seznami.txt", ["V trgovini moram kupiti:", "* jajca,", "* kruh,", "* moko.", "Na poti nazaj moram:", "* obiskati sosedo."],
-                 "seznami.html", ["V trgovini moram kupiti:", "<ul>", "  <li>jajca,</li>", "  <li>kruh,</li>", "  <li>moko.</li>", "</ul>",
-                                  "Na poti nazaj moram:", "<ul>", "  <li>obiskati sosedo.</li>", "</ul>"]),
+            testi = [
+                (['Andrej', 'Blaž', 'Cilka'], 'Andrej', [1], 'Blaž'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Blaž', [2, 4], 'Cilka'),
+                (['Andrej', 'Blaž', 'Cilka', 'Dunja'], 'Blaž', [10, 15], 'Dunja'),
+                (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'], 'B', [37, 123, 21, 41, 634, 43, 4, 4, 4625, 123, 99], 'E'),
+                (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'], 'L', [37, 123, 21, 41, 634, 43, 4, 4, 4625, 123, 99], 'C'),
+                (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'], 'A', [2], 'E'),
             ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    seznami(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTA5LCJ1c2VyIjoxMDczMH0:1uOf8r:20rwVR8Hp0dQyA7ehA5gdBUzfWhaAu6mwgwUE3qnWLs"
-        try:
-            test_data = [
-                ("gnezdeni_seznami.txt", ["zivali", "  sesalci", "    slon", "  ptici", "    sinicka", "rastline", "  sobne rastline", "    difenbahija"],
-                 "gnezdeni_seznami.html", ["<ul>", "  <li>zivali", "    <ul>", "      <li>sesalci", "        <ul>", "          <li>slon", "        </ul>",
-                                           "      <li>ptici", "        <ul>", "          <li>sinicka", "        </ul>", "    </ul>", "  <li>rastline",
-                                           "    <ul>", "      <li>sobne rastline", "        <ul>", "          <li>difenbahija", "        </ul>", "    </ul>", "</ul>"]),
-            ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    gnezdeni_seznami(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            for igralci, favorit, dolzine, rez in testi:
+                if not Check.equal(f"pri_kom_zaceti({igralci}, {favorit!r}, {dolzine})", rez):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:

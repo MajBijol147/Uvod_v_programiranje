@@ -1,206 +1,106 @@
 # =============================================================================
-# HTML datoteke
-# =====================================================================@001506=
+# Pesnik France
+#
+# Francetu je postalo jasno, da se mora čimprej naučiti osnov programiranja.
+# Sicer se trudi, a pomanjkanje vaje je zaenkrat več kot očitno.
+# Popravimo njegove programe. V spodnjih primerih oznaki `# slaba` in `# popravljena`
+# nista del vsebine datotek, temveč le povesta, kateri datoteki pripada dana vsebina.
+# =====================================================================@040243=
 # 1. podnaloga
-# Sestavite funkcijo `html2txt(vhodna, izhodna)`, ki bo vsebino datoteke
-# z imenom `vhodna` prepisala v datoteko z imenom `izhodna`, pri tem pa
-# odstranila vse značke.
+# Za začetek Franceta zanima, kako dolge programe naj piše. Praznih vrstic
+# in vrstic, ki vsebujejo le komentarje, ne šteje. Napišite funkcijo
+# `prestej_vrstice(datoteka)`, ki prešteje število vrstic v datoteki.
+# Primer: če je vsebina datoteke `fibo.py` enaka
 #
-# Značke se začnejo z znakom `'<'` in končajo z znakom `'>'`. Pozor: Začetek
-# in konec značke nista nujno v isti vrstici.
+#     def f(n):
+#         # bazna primera
+#         if n <= 2:
+#             return 1  # fib(1) = fib(2) = 1
+#         else:
+#             # rekurzivni korak
+#             return f(n - 1) + f(n - 2)
 #
-# Na primer, če je v datoteki vreme.html zapisano:
-#
-#     <h1>Napoved vremena</h1>
-#     <p>Jutri bo <i><b>lepo</b></i> vreme.
-#     Več o vremenu preberite <a
-#     href="http://www.arso.gov.si/">tukaj</a>.</p>
-#
-# bo po klicu `html2txt('vreme.html', 'vreme.txt')` v datoteki vreme.txt
-# zapisano:
-#
-#     Napoved vremena
-#     Jutri bo lepo vreme.
-#     Več o vremenu preberite tukaj.
+# naj funkcija vrne 5. Vsi komentarji se začnejo z znakom `#`.
 # =============================================================================
-def html2txt(vhod, izhod):
-    znacka = False
-    with open(vhod, encoding="utf-8") as vh:
-        with open(izhod, "w", encoding="utf-8") as iz:
-            for vrstica in vh:
-                txt_vrstica = ""
-                for znak in vrstica:
-                    if znak in "<>":
-                        znacka = not znacka
-                    elif not znacka:
-                        txt_vrstica += znak
-                print(txt_vrstica, file=iz, end="")
+def prestej_vrstice(datoteka):
+    stevilo = 0
+    with open(datoteka, encoding="utf-8") as dat:
+        for vrstica in dat:
+            if vrstica.strip() == "" or vrstica.strip()[0] == "#":
+                pass
+            else:
+                stevilo += 1
+    return stevilo
 
 
-# =====================================================================@001507=
+# =====================================================================@040209=
 # 2. podnaloga
-# Sestavite funkcijo `tabela(ime_vhodne, ime_izhodne)`, ki bo podatke
-# iz vhodne datoteke zapisala v obliki HTML tabele v izhodno datoteko.
+# France ne razume dobro razlike med `print` in `return`.
+# Zapiši funkcijo `odstrani_printe(slaba, popravljena)`, ki v datoteki `slaba`
+# vse klice funkcije `print`, ki ne zapisujejo v datoteko,
+# nadomesti z ukazom `return` in popravljen program zapiše v datoteko `popravljena`.
 #
-# V vhodni datoteki so podatki shranjeni po vrsticah ter ločeni z vejicami.
-# Na primer, če je v datoteki tabela.txt zapisano:
-#
-#     ena,dva,tri
-#     17,52,49.4,6
-#     abc,xyz
-#
-# bo po klicu `tabela('tabela.txt', 'tabela.html')` v datoteki tabela.html
-# zapisana naslednja vsebina:
-#
-#     <table>
-#       <tr>
-#         <td>ena</td>
-#         <td>dva</td>
-#         <td>tri</td>
-#       </tr>
-#       <tr>
-#         <td>17</td>
-#         <td>52</td>
-#         <td>49.4</td>
-#         <td>6</td>
-#       </tr>
-#       <tr>
-#         <td>abc</td>
-#         <td>xyz</td>
-#       </tr>
-#     </table>
-#
-# Pozor: Pazi na zamik (število presledkov na začetku vrstic) v izhodni
-# datoteki.
+#     # slaba                                       # popravljena
+#     def podpis(datoteka):                         def podpis(datoteka):
+#         with open(datoteka, 'w') as f:                with open(datoteka, 'w') as f:
+#             print('France', 'Pesnik', file=f)             print('France', 'Pesnik', file=f)
+#         print(True)                                   return True
 # =============================================================================
-def tabela(vhod, izhod):
-    with open(vhod, encoding="utf-8") as podatki:
-        with open(izhod, "w", encoding="utf-8") as tabela:
-            print("<table>", file=tabela)
-            for vrstica in podatki:
-                print("  <tr>", file=tabela)
-                stolpci = vrstica.strip().split(",")
-                for stolpec in stolpci:
-                    print(f"    <td>{stolpec}</td>", file=tabela)
-                print("  </tr>", file=tabela)
-            print("</table>", file=tabela)
-
-
-# =====================================================================@001508=
-# 3. podnaloga
-# Sestavite funkcijo `seznami(ime_vhodne, ime_izhodne)`, ki bo podatke
-# iz vhodne datoteke zapisala v izhodno datoteko v obliki neurejenega
-# seznama. V vhodni datoteki se vrstice seznamov začnejo z zvezdico.
-#
-# Na primer, če je v datoteki seznami.txt zapisano:
-#
-#     V trgovini moram kupiti:
-#     * jajca,
-#     * kruh,
-#     * moko.
-#     Na poti nazaj moram:
-#     * obiskati sosedo.
-#
-# bo po klicu funkcije `seznami('seznami.txt', 'seznami.html')` v datoteki
-# seznami.html naslednja vsebina:
-#
-#     V trgovini moram kupiti:
-#     <ul>
-#       <li>jajca,</li>
-#       <li>kruh,</li>
-#       <li>moko.</li>
-#     </ul>
-#     Na poti nazaj moram:
-#     <ul>
-#       <li>obiskati sosedo.</li>
-#     </ul>
-# =============================================================================
-def seznami(vhod, izhod):
-    seznam = False
-    with open(vhod, encoding="utf-8") as vh:
-        with open(izhod, "w", encoding="utf-8") as iz:
+def odstrani_printe(slaba, popravljena):
+    with open(slaba, encoding="utf-8") as vh:
+        with open(popravljena, "w", encoding="utf-8") as iz:
             for vrstica in vh:
-                if vrstica[0] == "*":
-                    if not seznam:
-                        seznam = True
-                        print("<ul>", file=iz)
-                    print(f"  <li>{vrstica[2:].strip()}</li>", file=iz)
+                vrstica = vrstica.strip("\n")
+                if "print(" in vrstica.strip() and "file=" not in vrstica.strip():
+                    presledki = vrstica.find("p")
+                    zacetek = vrstica.find("(")
+                    konec = vrstica.rfind(")")
+                    print(
+                        vrstica[:presledki] + f"return {vrstica[zacetek + 1: konec]}",
+                        file=iz,
+                    )
                 else:
-                    if seznam:
-                        seznam = False
-                        print("</ul>", file=iz)
-                    print(vrstica, file=iz, end="")
-            if seznam:
-                print("</ul>", file=iz)
+                    print(vrstica, file=iz)
 
 
-# =====================================================================@001509=
-# 4. podnaloga
-# Sestavite funkcijo `gnezdeni_seznami(ime_vhodne, ime_izhodne)`, ki bo
-# podatke iz vhodne datoteke zapisala v izhodno datoteko v obliki neurejenega
-# gnezdenega seznama. V vhodni datoteki je vsak element seznama v svoji
-# vrstici, zamik pred elementom pa določa, kako globoko je element gnezden.
-# Zamik bo vedno večkratnik števila 2.
+# =====================================================================@040210=
+# 3. podnaloga
+# France še ni odkril, da lahko npr. namesto `x = x + 2` napiše `x += 2`.
+#  Zapišite funkcijo `poenostavi(slaba, popravljena)`,
+# ki popravljeno vsebino Pythonovega programa iz datoteke `slaba`
+# (vpeljati mora vse možne okrajšave za seštevanje in odštevanje) zapiše v datoteko `popravljena`:
 #
-# Na primer, če je v datoteki seznami.txt zapisano:
+#     # slaba                          # popravljena
+#     def f(vred):                     def f(vred):
+#         vred = vred + 3                  vred += 3
+#         vred = 2 + vred                  vred += 2
+#         return vred + 1                  return vred + 1
 #
-#     zivali
-#       sesalci
-#         slon
-#       ptiči
-#         sinička
-#     rastline
-#       sobne rastline
-#         difenbahija
-#
-# bo po klicu `gnezdeni_seznami('seznami.txt', 'seznami.html')` v datoteki
-# seznami.html zapisano:
-#
-#     <ul>
-#       <li>živali
-#         <ul>
-#           <li>sesalci
-#             <ul>
-#               <li>slon
-#             </ul>
-#           <li>ptiči
-#             <ul>
-#               <li>sinička
-#             </ul>
-#         </ul>
-#       <li>rastline
-#         <ul>
-#           <li>sobne rastline
-#             <ul>
-#               <li>difenbahija
-#             </ul>
-#         </ul>
-#     </ul>
-#
-# Značk `<li>` ne zapirajte.
+# Privzameš lahko, da France sešteva/odšteva le naravna števila in so imena
+# spremenljivk iz malih angleških črk ter podčrtajev (npr. `novi_stevec`).
 # =============================================================================
-def gnezdeni_seznami(ime_vhodne, ime_izhodne):
-    nivo = 0
-    zamik = 2
-    with open(ime_vhodne, encoding='utf-8') as vhodna:
-        with open(ime_izhodne, 'w', encoding='utf-8') as izhodna:
-            for vrstica in vhodna:
-                prvi = 0 # Prvi znak, ki ni presledek.
-                while vrstica[prvi] == ' ':
-                    prvi += 1
-                n = prvi // zamik + 1
-                vrstica = vrstica.strip()
-                if n > nivo:
-                    print(2*zamik*nivo*' ' + '<ul>', file=izhodna)
-                    nivo += 1
-                while n < nivo:
-                    nivo -= 1
-                    print(2*zamik*nivo*' ' + '</ul>', file=izhodna)
-                print((2*zamik*nivo - zamik)*' ' + '<li>' + vrstica, file=izhodna)
-            while nivo > 0:
-                nivo -= 1
-                print(2*zamik*nivo*' ' + '</ul>', file=izhodna)
-                
+def poenostavi(slaba, popravljena):
+    with open(slaba, encoding="utf-8") as vh:
+        with open(popravljena, "w", encoding="utf-8") as iz:
+            for vrstica in vh:
+                i = 0
+                while vrstica[i] == " ":
+                    i += 1
+                z_sprem = i
+                k_sprem = vrstica[i:].find(" ") + len(vrstica[:i])
+                sprem = vrstica[z_sprem:k_sprem]
+                stevilo = "".join(x for x in vrstica if x.isdigit())
+                if "+" in vrstica and vrstica.count(sprem) > 1:
+                    print(vrstica[:i] + sprem + " += " + stevilo, file=iz)
+                elif "-" in vrstica and vrstica.count(sprem) > 1:
+                    if sprem in vrstica[vrstica.find("-"):]:
+                        print(vrstica.strip("\n"), file=iz)
+                    else:
+                        print(vrstica[:i] + sprem + " -= " + stevilo, file=iz)
+                else:
+                    print(vrstica.strip("\n"), file=iz)
+
+
 # ============================================================================@
 # fmt: off
 "Če vam Python sporoča, da je v tej vrstici sintaktična napaka,"
@@ -717,19 +617,62 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTA2LCJ1c2VyIjoxMDczMH0:1uOf8r:66ModAGDjfZY2CmXcI1nDu6YUwsd64D4tg6_ITxkeC4"
+        ] = "eyJwYXJ0Ijo0MDI0MywidXNlciI6MTA3MzB9:1uOx81:tmFRXAkr7jNBeAPd6raf9DjOrrGoLKRIra6tthlLGxk"
         try:
-            test_data = [
-                ("napoved_vremena.html", ["<h1>Napoved vremena</h1>", "<p>Jutri bo <i><b>lepo</b></i> vreme.", "Vec o vremenu preberite <a", 'href="napoved.html">tukaj</a>.</p>'],
-                 "napoved_vremena.txt", ["Napoved vremena", "Jutri bo lepo vreme.", "Vec o vremenu preberite tukaj."]),
+            primeri = [
+                (
+                    "primer1a.py",
+                    [
+                        "",
+                        "",
+                        "def kvadrati(seznam):",
+                        "    a = []",
+                        "    for x in seznam:",
+                        "        a.append(x ** 2)",
+                        "    return a",
+                        ""
+                    ],
+                    5
+                ),
+                (
+                    "primer1b.py",
+                    [
+                        "def fibo(n):",
+                        "    ",
+                        "    # bazna primera",
+                        "    if n <= 2:",
+                        "        return 1  # fibo(1) = fibo(2) = 1",
+                        "    ",
+                        "    else:",
+                        "        # rekurzivni korak",
+                        "        return fibo(n - 1) + fibo(n - 2)  # komentar na koncu",
+                        "    "
+                    ],
+                    5
+                ),
+                (
+                    "primer1c.py",
+                    [
+                        "\t",
+                        "def f(x):",
+                        "\t",
+                        "\tx = x + 11",
+                        "\tx = 123 + x",
+                        "\treturn x + 1",
+                    ],
+                    4
+                )
             ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    html2txt(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            
+            def preveri1():
+                for ime_vhod, vsebina_vhod, pravi_odgovor in primeri:
+                    with Check.in_file(ime_vhod, vsebina_vhod, encoding="utf-8"):
+                        odgovor = prestej_vrstice(ime_vhod)
+                        if odgovor != pravi_odgovor:
+                            Check.error(f"Datoteka vsebuje {pravi_odgovor} dejanskih vrstic, vaš odgovor pa je {odgovor}.")
+                   
+            
+            preveri1()
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -741,22 +684,80 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTA3LCJ1c2VyIjoxMDczMH0:1uOf8r:WBMX5pxxo587oEnI56S8AQGnLPVQh9TcETo1dlIVQyY"
+        ] = "eyJwYXJ0Ijo0MDIwOSwidXNlciI6MTA3MzB9:1uOx81:qz_635SeJaDl6jAZFJ-Www2Ju76oJZN4NyNMiTetz54"
         try:
-            test_data = [
-                ("tabela.txt", ["ena,dva,tri", "17,52,49.4,6", "abc,xyz"], "tabela.html",
-                 ["<table>", "  <tr>", "    <td>ena</td>", "    <td>dva</td>", "    <td>tri</td>",
-                  "  </tr>", "  <tr>", "    <td>17</td>", "    <td>52</td>", "    <td>49.4</td>",
-                  "    <td>6</td>", "  </tr>", "  <tr>", "    <td>abc</td>", "    <td>xyz</td>",
-                  "  </tr>", "</table>"]),
+            primeri = [
+                (
+                    "primer2a.py",
+                    "primer2a_popravljeno.py",
+                    [
+                        "def podpis(datoteka):",
+                        "    with open(datoteka, 'w') as f:",
+                        "        print('France', 'Pesnik', file=f)",
+                        "    print(True)",
+                    ],
+                    [
+                        "def podpis(datoteka):",
+                        "    with open(datoteka, 'w') as f:",
+                        "        print('France', 'Pesnik', file=f)",
+                        "    return True",
+                    ],
+                ),
+                (
+                    "primer2b.py",
+                    "primer2b_popravljeno.py",
+                    [
+                        "def vsota_do_n(n):",
+                        "    print(n * (n + 1) // 2)",
+                        "",
+                        "def neprintaj_seznama(seznam):",
+                        "    print(seznam)",
+                    ],
+                    [
+                        "def vsota_do_n(n):",
+                        "    return n * (n + 1) // 2",
+                        "",
+                        "def neprintaj_seznama(seznam):",
+                        "    return seznam",
+                    ]
+                ),
+                (
+                    "primer2c.py",
+                    "primer2c_popravljeno.py",
+                    [
+                        "def urejeni_par(a, b):",
+                        "    if a < b:",
+                        "        print(a, b)",
+                        "    else:",
+                        "        print(b, a)",
+                        "",
+                        "def urejeni_par2(a, b):",
+                        "    if a < b:",
+                        "        print((a, b))",
+                        "    else:",
+                        "        print((b, a))",
+                    ],
+                    [
+                        "def urejeni_par(a, b):",
+                        "    if a < b:",
+                        "        return a, b",
+                        "    else:",
+                        "        return b, a",
+                        "",
+                        "def urejeni_par2(a, b):",
+                        "    if a < b:",
+                        "        return (a, b)",
+                        "    else:",
+                        "        return (b, a)",
+                    ]
+                ),
             ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    tabela(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            
+            for ime_vhod, ime_izhod, vsebina_vhod, vsebina_izhod in primeri:
+                with Check.in_file(ime_vhod, vsebina_vhod):
+                    odstrani_printe(ime_vhod, ime_izhod)
+                if not Check.out_file(ime_izhod, vsebina_izhod):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
@@ -768,46 +769,82 @@ def _validate_current_file():
     if Check.part():
         Check.current_part[
             "token"
-        ] = "eyJwYXJ0IjoxNTA4LCJ1c2VyIjoxMDczMH0:1uOf8r:w6rc4fopr_ZWh7Xc04KQpHMT9VG3JoCHzdKozNrFy9s"
+        ] = "eyJwYXJ0Ijo0MDIxMCwidXNlciI6MTA3MzB9:1uOx81:64X5bMktRBrdjY7dtEYLBjF7PoeTWrkW3VCUu0nkdZg"
         try:
-            test_data = [
-                ("seznami.txt", ["V trgovini moram kupiti:", "* jajca,", "* kruh,", "* moko.", "Na poti nazaj moram:", "* obiskati sosedo."],
-                 "seznami.html", ["V trgovini moram kupiti:", "<ul>", "  <li>jajca,</li>", "  <li>kruh,</li>", "  <li>moko.</li>", "</ul>",
-                                  "Na poti nazaj moram:", "<ul>", "  <li>obiskati sosedo.</li>", "</ul>"]),
+            primeri = [
+                (
+                    "primer3a.py",
+                    "primer3a_popravljeno.py",
+                    [
+                        "def f(vred):",
+                        "    vred = vred + 3",
+                        "    vred = 2 + vred",
+                        "    return vred + 1",
+                    ],
+                    [
+                        "def f(vred):",
+                        "    vred += 3",
+                        "    vred += 2",
+                        "    return vred + 1",
+                    ]
+                ),
+                (
+                    "primer3b.py",
+                    "primer3b_popravljeno.py",
+                    [
+                        "def f(x):",
+                        "    x = x + 11",
+                        "    x = 123 + x",
+                        "    return x + 1",
+                    ],
+                    [
+                        "def f(x):",
+                        "    x += 11",
+                        "    x += 123",
+                        "    return x + 1",
+                    ]
+                ),
+                (
+                    "primer3c.py",
+                    "primer3c_popravljeno.py",
+                    [
+                        "def f(x_a_b):",
+                        "    x_a_b = x_a_b + 100",
+                        "    x_a_b = 42 + x_a_b",
+                        "    return x_a_b + 4",
+                    ],
+                    [
+                        "def f(x_a_b):",
+                        "    x_a_b += 100",
+                        "    x_a_b += 42",
+                        "    return x_a_b + 4",
+                    ]
+                ),
+                (
+                    "primer3d.py",
+                    "primer3d_popravljeno.py",
+                    [
+                        "def f(xy):",
+                        "    xy = xy - 11",
+                        "    xy = 123 - xy",
+                        "    xy = 33 + xy",
+                        "    return xy + 3",
+                    ],
+                    [
+                        "def f(xy):",
+                        "    xy -= 11",
+                        "    xy = 123 - xy",
+                        "    xy += 33",
+                        "    return xy + 3",
+                    ]
+                )
             ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    seznami(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
-        except TimeoutError:
-            Check.error("Dovoljen čas izvajanja presežen")
-        except Exception:
-            Check.error(
-                "Testi sprožijo izjemo\n  {0}",
-                "\n  ".join(traceback.format_exc().split("\n"))[:-2],
-            )
-
-    if Check.part():
-        Check.current_part[
-            "token"
-        ] = "eyJwYXJ0IjoxNTA5LCJ1c2VyIjoxMDczMH0:1uOf8r:20rwVR8Hp0dQyA7ehA5gdBUzfWhaAu6mwgwUE3qnWLs"
-        try:
-            test_data = [
-                ("gnezdeni_seznami.txt", ["zivali", "  sesalci", "    slon", "  ptici", "    sinicka", "rastline", "  sobne rastline", "    difenbahija"],
-                 "gnezdeni_seznami.html", ["<ul>", "  <li>zivali", "    <ul>", "      <li>sesalci", "        <ul>", "          <li>slon", "        </ul>",
-                                           "      <li>ptici", "        <ul>", "          <li>sinicka", "        </ul>", "    </ul>", "  <li>rastline",
-                                           "    <ul>", "      <li>sobne rastline", "        <ul>", "          <li>difenbahija", "        </ul>", "    </ul>", "</ul>"]),
-            ]
-            napaka = False
-            for vhodna, vhod, izhodna, izhod in test_data:
-                if napaka: break
-                with Check.in_file(vhodna, vhod, encoding='utf-8'):
-                    gnezdeni_seznami(vhodna, izhodna)
-                    if not Check.out_file(izhodna, izhod, encoding='utf-8'):
-                        napaka = True # test has failed
+            
+            for ime_vhod, ime_izhod, vsebina_vhod, vsebina_izhod in primeri:
+                with Check.in_file(ime_vhod, vsebina_vhod):
+                    poenostavi(ime_vhod, ime_izhod)
+                if not Check.out_file(ime_izhod, vsebina_izhod):
+                    break
         except TimeoutError:
             Check.error("Dovoljen čas izvajanja presežen")
         except Exception:
