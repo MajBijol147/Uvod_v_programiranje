@@ -5,12 +5,12 @@
 # dane abecede zamenjamo z neko drugo črko. Tako šifro predstavimo s slovarjem,
 # ki ima za ključe vse črke iz abecede, pripadajoče vrednosti pa so črke, s
 # katerimi jih zašifriramo.
-# 
+#
 # Tako slovar `{'A': 'B', 'C': 'C', 'B': 'D', 'D': 'A'}` pomeni, da se `A`
 # zašifrira v `B`, `B` v `D`, `D` v `A`, `C` pa se ne spremeni.
-# 
+#
 # V vseh testnih primerih bomo uporabljali naslednjo substitucijsko šifro:
-# 
+#
 #     nasa_sifra = {'Č': 'K', 'A': 'O', 'C': 'Z', 'B': 'M', 'E': 'V',
 #                   'D': 'C', 'G': 'P', 'F': 'E', 'I': 'B', 'H': 'F',
 #                   'K': 'I', 'J': 'A', 'M': 'U', 'L': 'H', 'O': 'R',
@@ -20,7 +20,7 @@
 # 1. podnaloga
 # Sestavite funkcijo `sifriraj`, ki sprejme šifro in besedo in vrne rezultat
 # šifriranja. Predpostavite lahko, da vse črke v besedi nastopajo v šifri.
-# 
+#
 #     >>> sifriraj(nasa_sifra, 'MATEMATIK')
 #     'UOČVUOČBI'
 # =============================================================================
@@ -29,11 +29,13 @@ def sifriraj(sifra, niz):
     for crka in niz:
         sifriran_niz += sifra[crka]
     return sifriran_niz
+
+
 # =====================================================================@001389=
 # 2. podnaloga
 # Sestavite funkcijo `ali_je_sifra`, ki ugotovi, ali dani slovar predstavlja
 # šifro, torej ali je bijekcija črk na neki abecedi.
-# 
+#
 #     >>> ali_je_sifra({'A': 'B', 'B': 'A'})
 #     True
 #     >>> ali_je_sifra({'A': 'B', 'B': 'C'})
@@ -41,140 +43,46 @@ def sifriraj(sifra, niz):
 # =============================================================================
 def ali_je_sifra(sifra):
     return set(sifra.keys()) == set(sifra.values())
+
+
 # =====================================================================@001390=
 # 3. podnaloga
 # Sestavite funkcijo `inverz`, ki vrne inverz dane šifre, če ta obstaja. V
 # nasprotnem primeru funkcija vrne `None`.
-# 
+#
 #     >>> inverz({'A': 'B', 'B': 'C', 'C': 'A'})
 #     {'A': 'C', 'B': 'A', 'C': 'B'}
 # =============================================================================
 def inverz(sifra):
     if ali_je_sifra(sifra) == True:
-        nova_sifra = dict()
-        for kljuc in sifra:
-            nova_sifra.setdefault(sifra[kljuc], kljuc)
+        nova_sifra = {v: k for k, v in sifra.items()}
+        # nova_sifra = dict()
+        # for kljuc in sifra:
+        #    nova_sifra.setdefault(sifra[kljuc], kljuc)
         return nova_sifra
     else:
         return None
-        
+
+
 # =====================================================================@001391=
 # 4. podnaloga
 # Sestavite funkcijo `odsifriraj`, ki sprejme šifro in zašifrirano besedilo,
 # vrne pa odšifrirano besedilo. Če slovar ni bijekcija (in se torej besedilo ne
 # da nujno odšifrirati), naj funkcija vrne `None`.
-# 
+#
 #     >>> odsifriraj(nasa_sifra, 'MVCOI')
 #     'BEDAK'
 # =============================================================================
 def odsifriraj(sifra, niz):
     if ali_je_sifra(sifra) == True:
         nova_sifra = inverz(sifra)
-        nov_niz = ""
-        for znak in niz:
-            nov_niz += nova_sifra[znak]
-        return nov_niz
+        # nov_niz = ""
+        # for znak in niz:
+        #    nov_niz += nova_sifra[znak]
+        # return nov_niz
+        return sifriraj(nova_sifra, niz)
     else:
         return None
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ============================================================================@

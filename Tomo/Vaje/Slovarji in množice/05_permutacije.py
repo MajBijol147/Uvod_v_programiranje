@@ -8,17 +8,19 @@
 # 1. podnaloga
 # Sestavite funkcijo `slika(permutacija, x)`, ki vrne sliko števila `x`
 # s podano permutacijo.
-# 
+#
 #     >>> slika({1: 3, 2: 4, 3: 2, 4: 1}, 1)
 #     3
 # =============================================================================
 def slika(permutacija, x):
-    return permutacija[x]
+    return permutacija.get(x)
+
+
 # =====================================================================@001380=
 # 2. podnaloga
 # Sestavite funkcijo `slike(permutacija, x, n)`, ki vrne zaporedje slik, ki ga
 # dobimo, če začnemo s številom `x` in na njem `n`-krat uporabimo permutacijo.
-# 
+#
 #     >>> slike({1: 3, 2: 4, 3: 2, 4: 1}, 1, 2)
 #     [1, 3, 2]
 # =============================================================================
@@ -27,14 +29,15 @@ def slike(permutacija, x, n):
     for i in range(n):
         y = slika(permutacija, x)
         x = y
-        zaporedje_slik.append(y)
+        zaporedje_slik.append(x)
     return zaporedje_slik
-        
+
+
 # =====================================================================@001381=
 # 3. podnaloga
 # Sestavite funkcijo `cikel(permutacija, x)`, ki vrne celoten cikel, ki se
 # začne s številom `x`.
-# 
+#
 #     >>> cikel({1: 3, 2: 2, 3: 1}, 1)
 #     [1, 3]
 #     >>> cikel({1: 3, 2: 2, 3: 1}, 2)
@@ -47,12 +50,14 @@ def cikel(permutacija, x):
         y = slika(permutacija, y)
         cel_cikel.append(y)
     return cel_cikel
+
+
 # =====================================================================@001382=
 # 4. podnaloga
 # Sestavite funkcijo `cikli`, ki vrne seznam disjunktnih ciklov dane
 # permutacije. Vsak cikel naj se začne z najmanjšim številom v ciklu, cikli pa
 # naj bodo urejeni po začetnem številu.
-# 
+#
 #     >>> cikli({1: 3, 2: 2, 3: 1})
 #     [[1, 3], [2]]
 # =============================================================================
@@ -65,118 +70,24 @@ def cikli(permutacija):
             seznam_ciklov.append(c)
             mnozica_elementov.update(c)
     return seznam_ciklov
-    
+
+
 # =====================================================================@001383=
 # 5. podnaloga
 # Sestavite funkcijo `je_permutacija`, ki vrne `True`, če dani slovar
 # predstavlja permutacijo, in `False` sicer.
-# 
+#
 #     >>> je_permutacija({1: 2, 2: 1})
 #     True
 #     >>> je_permutacija({1: 3, 2: 4})
 #     False
 # =============================================================================
 def je_permutacija(permutacija):
-    return set(permutacija.keys()) == set(permutacija.values()) == set(range(1 , len(permutacija) + 1))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return (
+        set(permutacija.keys())
+        == set(permutacija.values())
+        == set(range(1, len(permutacija) + 1))
+    )
 
 
 # ============================================================================@

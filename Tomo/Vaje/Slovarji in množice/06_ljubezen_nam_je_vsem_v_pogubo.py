@@ -4,7 +4,7 @@
 # Socialno omrežje zaljubljenosti podamo s slovarjem, ki ime osebe preslika v
 # množico vseh, v katere je oseba zaljubljena (ena oseba je lahko zaljubljena v
 # več oseb). Na primer, slovar
-# 
+#
 #     {
 #         'Ana': {'Bine', 'Cene'},
 #         'Bine': set(),
@@ -12,7 +12,7 @@
 #         'Davorka': {'Davorka'},
 #         'Eva': {'Bine'}
 #     }
-# 
+#
 # nam pove, da je Ana zaljubljena v Bineta in Ceneta, Bine ni zaljubljen, Cene
 # ljubi Bineta, Davorka samo sebe in Eva Bineta.
 # =====================================================================@001384=
@@ -23,9 +23,11 @@
 def narcisoidi(zaljubljeni):
     narcisi = set()
     for oseba in zaljubljeni:
-        if oseba in zaljubljeni[oseba]:
+        if oseba in zaljubljeni.get(oseba):
             narcisi.add(oseba)
     return narcisi
+
+
 # =====================================================================@001385=
 # 2. podnaloga
 # Sestavite funkcijo `ljubljeni`, ki sprejme slovar zaljubljenih in vrne
@@ -36,6 +38,8 @@ def ljubljeni(zaljubljeni):
     for oseba in zaljubljeni:
         srečni.update(zaljubljeni[oseba])
     return srečni
+
+
 # =====================================================================@001386=
 # 3. podnaloga
 # Sestavite funkcijo `pari`, ki sprejme slovar zaljubljenih in vrne _množico_
@@ -44,17 +48,23 @@ def ljubljeni(zaljubljeni):
 # Bine zaljubljena, dodamo par `('Ana', 'Bine')`.
 # =============================================================================
 def pari(zaljubljeni):
-    #srečnejši = set()
-    #if zaljubljeni == {}:
+    # srečnejši = set()
+    # if zaljubljeni == {}:
     #    return set()
-    #else:
+    # else:
     #    for oseba in zaljubljeni:
     #        for partner in zaljubljeni[oseba]:
     #            if oseba in zaljubljeni[partner]:
     #                srečnejši.add((oseba, partner))
     #        return srečnejši
-    return {tuple(sorted((x, y))) for x in zaljubljeni
-            for y in zaljubljeni[x] if x in zaljubljeni[y]}
+    return {
+        tuple(sorted((x, y)))
+        for x in zaljubljeni
+        for y in zaljubljeni[x]
+        if x in zaljubljeni[y]
+    }
+
+
 # =====================================================================@001387=
 # 4. podnaloga
 # Sestavite funkcijo `ustrezljivi(oseba, zaljubljeni)`, ki sprejme ime osebe
@@ -62,9 +72,9 @@ def pari(zaljubljeni):
 # posebej ustrežljivi. Posebej ustrežljivi so seveda zato, ker so bodisi
 # zaljubljeni v dano osebo, bodisi so zaljubljeni v osebo, ki je posebej
 # ustrežljiva do nje, in tako naprej.
-# 
+#
 # Na primer, če imamo slovar
-# 
+#
 #     {
 #         'Ana': {'Bine', 'Cene'},
 #         'Bine': {'Ana'},
@@ -72,123 +82,28 @@ def pari(zaljubljeni):
 #         'Davorka': {'Davorka'},
 #         'Eva': {'Bine'}
 #     }
-# 
+#
 # so do Ceneta posebej ustrežljivi Ana (ki je zaljubljena vanj), Bine (ki je
 # zaljubljen v Ano) ter Cene in Eva (ki sta zaljubljena v Bineta).
 # =============================================================================
 def ustrezljivi(oseba, zaljubljeni):
     ustrezljivi = set()
     dodani = set()
-    #najprej tisti, ki so zaljubljeni v osebo
+    # najprej tisti, ki so zaljubljeni v osebo
     for x in zaljubljeni:
         if oseba in zaljubljeni[x]:
             dodani.add(x)
-    
-    #zaljubljeni v zaljubljenega
+
+    # zaljubljeni v zaljubljenega
     while dodani:
         ustrezljivi.update(dodani)
-        dodani = { o for o in zaljubljeni for dodan in dodani
-                  if dodan in zaljubljeni[o] and o not in ustrezljivi}
+        dodani = {
+            o
+            for o in zaljubljeni
+            for dodan in dodani
+            if dodan in zaljubljeni[o] and o not in ustrezljivi
+        }
     return ustrezljivi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ============================================================================@

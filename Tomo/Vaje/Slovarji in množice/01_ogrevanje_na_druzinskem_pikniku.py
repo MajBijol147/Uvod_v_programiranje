@@ -5,7 +5,7 @@
 # člani razširjene družine zelo izbirčni, si že leta skrbno beležite, katere
 # sladice najraje jedo. Tako imate spravljen slovar, ki vsakemu članu pristavi
 # njegovo najljubšo sladico, npr.
-# 
+#
 #     sladkosnedi= {"mami" : "vanilijev sladoled", "ati" : "puding",
 #                       "babi Minka" : "prekmurska gibanica",
 #                       "stric Franc" : "panacota", "teta Eli" : "magdalence",
@@ -14,21 +14,23 @@
 # 1. podnaloga
 # Sestavite funkcijo `druzinski_clani`, ki sprejme slovar sladkosnedov in vrne
 # seznam družinskih članov.
-# 
+#
 #     >>> druzinski_clani({"mami": "pita", "ati": "torta"})
 #     ['mami', 'ati']
 # =============================================================================
 def druzinski_clani(druzina):
     return list(druzina.keys())
+
+
 # =====================================================================@020338=
 # 2. podnaloga
 # Vaša boljša polovica si je izpogajala, da bo na tokratni družinski piknik
 # povabljena tudi njihova družina.
-# 
+#
 # Sestavite funkcijo `zdruzi_sladkosnede(domaci, njihovi)`, ki združi slovarja
 # vaših in njihovih sladkosnedov. Če se kakšno ime pojavi v obeh slovarjih, naj
 # v združenem slovarju nastopa član vaše družine.
-# 
+#
 #     >>> zdruzi_sladkosnede({"mami": "pita", "ati": "torta"},
 #                            {"brat Jan": "cokolada", "mami": "piskoti"})
 #     {'mami': 'pita', 'ati': 'torta', 'brat Jan': 'cokolada'}
@@ -38,17 +40,19 @@ def zdruzi_sladkosnede(domaci, njihovi):
         if clan in domaci:
             domaci = domaci
         else:
-            domaci.setdefault(clan, njihovi.get(clan))
+            domaci.setdefault(clan, njihovi[clan])
     return domaci
+
+
 # =====================================================================@020339=
 # 3. podnaloga
-# Od babice Minke ste dobili seznam gostov, ki so potrdili udeležbo na pikniku. 
-# 
+# Od babice Minke ste dobili seznam gostov, ki so potrdili udeležbo na pikniku.
+#
 # Sestavite funkcijo `nakupovalni_seznam`, ki sprejme slovar sladkosnedov in
 # seznam gostov, ki so udeležbo potrdili, ter vrne slovar sladic s
 # pripadajočimi količinami, ki jih je potrebno kupiti. Pazite na to, da ne
 # veste najljubših sladic od vseh povabljenih gostov.
-# 
+#
 #     >>> nakupovalni_seznam({"mami": "pita", "ati": "torta"}, ["mami", "brat"])
 #     {'pita': 1}
 # =============================================================================
@@ -60,103 +64,6 @@ def nakupovalni_seznam(slovar, gosti):
             nakup_seznam.setdefault(sladica, 0)
             nakup_seznam[sladica] += 1
     return nakup_seznam
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ============================================================================@
