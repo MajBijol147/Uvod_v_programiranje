@@ -20,16 +20,16 @@ def url_stevilo(st):
 
 # pobiranje surovih HTML podatkov. Default nastavitve pobere do vključno 1126,
 #   po želji lahko več (npr. 1500)
-# vsaka skladba je svoja spletna stran, zato mora program poklicati 1126 posameznih strani,
-#   kar je časovno zamudno
+# vsaka skladba je svoja spletna stran, zato mora program poklicati 1126
+#   posameznih strani, kar je časovno zamudno
 def pobiranje_html(st):
     st = stevilo_kompozicij
     for x in range(814, st + 1):
         print(x)
         pravo_st = url_stevilo(x)
-        url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{pravo_st}?lang=en"
+        url = f"""https://www.bach-digital.de/receive/BachDigitalWork_work_0000
+                {pravo_st}?lang=en"""
         odziv = requests.get(url, timeout=5, headers=headers)
         # timeout je bugfix
-        print(odziv)
         with open(f"skladba{pravo_st}.html", "w", encoding="utf-8") as dat:
             dat.write(odziv.text)
