@@ -22,9 +22,8 @@ def url_stevilo(st):
 #   po želji lahko več (npr. 1500)
 # vsaka skladba je svoja spletna stran, zato mora program poklicati 1126
 #   posameznih strani, kar je časovno zamudno
-def pobiranje_html(st):
-    st = stevilo_kompozicij
-    for x in range(814, st + 1):
+def pobiranje_html():
+    for x in range(1, 1126 + 1):
         print(x)
         pravo_st = url_stevilo(x)
         url = f"""https://www.bach-digital.de/receive/BachDigitalWork_work_0000
