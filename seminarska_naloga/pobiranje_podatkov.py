@@ -27,9 +27,10 @@ for x in range(1, 1126 + 1):
         dat.write(odziv.text)
 
 # vzorci za regularne izraze ter podatki, ki bodo izlusčeni.
+# SPREMENI BWV VZOREC, NAJ IŠČE V NASLOVU
 vzorci = {
     "naslov": r'<span class="worktitle">(?P<naslov>.+?)</span>',
-    "BWV": r'Bach-Werke-Verzeichnis">BWV&nbsp;(?P<BWV>\d+?)</abbr>',
+    "BWV": r"<title>Bach digital - .+? BWV (?P<BWV>.*?)</title>",
     "zanr": r'<dt class="col-sm-3">Genre</dt>\n<dd class="col-sm-9">(?P<zanr>.+?)</dd>',
     "citati_biblije": r'<dt class="col-sm-3">Proper</dt>',
     "psalm": r'<dd class="col-sm-9">Psalm: .*?>(?P<psalm>.+?)</a>',
@@ -39,6 +40,7 @@ vzorci = {
     "nastanek": r'"Date of origin":"(?P<nastanek>\d+?)"',
     "povezave": r"is part of.*?>(?P<povezave>.+?)</a>",
 }
+# Bach-Werke-Verzeichnis">BWV&nbsp;(?P<BWV>\d+?)</abbr>
 
 
 # iz surovega html izlušči podatke. Za vsako skladbo ustvari slovar,
