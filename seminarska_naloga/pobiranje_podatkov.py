@@ -18,7 +18,7 @@ def url_stevilo(st):
 # pobiranje surovih HTML podatkov. Default nastavitve pobere do vključno 1126,
 #   po želji lahko več (npr. 1500).
 # vsaka skladba je svoj spletni naslov, zato mora program poklicati 1126
-#   posameznih naslovov, kar je časovno zamudno.
+#   posameznih naslovov, kar traja cca. 5 min.
 for x in range(1, 1126 + 1):
     print(x)
     url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{url_stevilo(x)}?lang=en"
