@@ -1,13 +1,10 @@
 import requests
-import os
+import csv
 import re
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
 }
-
-# število kompozicij v BWV leta 1998
-stevilo_kompozicij = 1126
 
 
 # ustrezna oblika števila, za vpis v url
@@ -19,34 +16,84 @@ def url_stevilo(st):
 
 
 # pobiranje surovih HTML podatkov. Default nastavitve pobere do vključno 1126,
-#   po želji lahko več (npr. 1500)
+#   po želji lahko več (npr. 1500).
 # vsaka skladba je svoj spletni naslov, zato mora program poklicati 1126
-#   posameznih naslovov, kar je časovno zamudno
-def pobiranje_html():
-    for x in range(1, 1126 + 1):
-        print(x)
-        pravo_st = url_stevilo(x)
-        url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{pravo_st}?lang=en"
-        odziv = requests.get(url, timeout=5, headers=headers)
-        # timeout je bugfix
-        with open(f"skladba{pravo_st}.html", "w", encoding="utf-8") as dat:
-            dat.write(odziv.text)
+#   posameznih naslovov, kar je časovno zamudno.
+for x in range(1, 1126 + 1):
+    print(x)
+    url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{url_stevilo(x)}?lang=en"
+    odziv = requests.get(url, headers=headers)
+    with open(f"skladba{x}.html", "w", encoding="utf-8") as dat:
+        dat.write(odziv.text)
+
+# vzorci za regularne izraze ter podatki, ki bodo izlusčeni.
+vzorci = {
+    "naslov": r'<span class="worktitle">(?P<naslov>.+?)</span>',
+    "BWV": r'Bach-Werke-Verzeichnis">BWV&nbsp;(?P<BWV>\d+?)</abbr>',
+    "zanr": r'<dt class="col-sm-3">Genre</dt>\n<dd class="col-sm-9">(?P<zanr>.+?)</dd>',
+    "citati_biblije": r'<dt class="col-sm-3">Proper</dt>',
+    "psalm": r'<dd class="col-sm-9">Psalm: .*?>(?P<psalm>.+?)</a>',
+    "pismo": r"<br>Epistel: .*?>(?P<pismo>.+?)</a>",
+    "evangelij": r"<br>Gospel: .*?>(?P<evangelij>.+?)</a>",
+    "aranzma": r'"Scoring":\["(?P<aranzma>.*?)"\]',
+    "nastanek": r'"Date of origin":"(?P<nastanek>\d+?)"',
+    "povezave": r"is part of.*?>(?P<povezave>.+?)</a>",
+}
 
 
-naslov = r'<span class="worktitle">(?P<naslov>.+?)</span>'
-katalog = r'Bach-Werke-Verzeichnis">BWV&nbsp;(?P<katalog>\d+?)</abbr>'
-zanr = r'<dt class="col-sm-3">Genre</dt>\n<dd class="col-sm-9">(?P<zanr>.+?)</dd>'
-citati_biblije = r'<dt class="col-sm-3">Proper</dt>'
-psalm = r'<dd class="col-sm-9">Psalm: .*?(?P<psalm>.+?)</a>'
-pismo = r"<br>Epistel: .*?(?P<pismo>.+?)</a>"
-evangelij = r"<br>Gospel: .*?(?P<evangelij>.+?)</a>"
-#aranzma_seznam = r'<dt class="col-sm-3">Scoring</dt>\n<dd class="col-sm-9">(?P<aranzma_poved>.+?)</dd>'
-#aranzma_okrajsava = r'<abbr title="(?P<aranzma_okrajsava>.+?)">\w</abbr>'
-aranzma = r'"Scoring":\["(?P<aranzma>.*?)"\]'
-nastanek = r'"Date of origin":"(?P<nastanek>\d+?)"'
-je_del = r'is part of.*?>(?P<je_del>.+?)</a>'
-
-def repo():
-    with open("skladba0001.html", encoding="utf-8") as dat:
+# iz surovega html izlušči podatke. Za vsako skladbo ustvari slovar,
+#   in nato slovarje shrani v seznam
+podatki = []
+for x in range(1, 1126 + 1):
+    with open(f"skladba{x}.html", encoding="utf-8") as dat:
+        skladba = {}
         besedilo = dat.read()
-        return re.findall(je_del, besedilo)
+        skladba.update({"sifra": x})
+        for vzorec in vzorci:
+            podatek = re.findall(vzorci[vzorec], besedilo)
+            if vzorec == "citati_biblije":
+                if podatek == ['<dt class="col-sm-3">Proper</dt>']:
+                    podatek = ["DA"]
+                else:
+                    podatek = ["NE"]
+                skladba.update({vzorec: podatek[0]})
+            elif len(podatek) == 0:
+                skladba.update({vzorec: "NA"})
+            else:
+                skladba.update({vzorec: podatek[0]})
+        podatki.append(skladba)
+
+# Seznam s slovarji pretvori v CSV datoteko
+with open("podatki.csv", "w", newline="", encoding="utf-8") as dat:
+    writer = csv.writer(dat)
+    writer.writerow(
+        [
+            "sifra",
+            "naslov",
+            "BWV",
+            "zanr",
+            "citati_biblije",
+            "psalm",
+            "pismo",
+            "evangelij",
+            "aranzma",
+            "nastanek",
+            "povezave",
+        ]
+    )
+    for skladba in podatki:
+        writer.writerow(
+            [
+                skladba["sifra"],
+                skladba["naslov"],
+                skladba["BWV"],
+                skladba["zanr"],
+                skladba["citati_biblije"],
+                skladba["psalm"],
+                skladba["pismo"],
+                skladba["evangelij"],
+                skladba["aranzma"],
+                skladba["nastanek"],
+                skladba["povezave"],
+            ]
+        )
