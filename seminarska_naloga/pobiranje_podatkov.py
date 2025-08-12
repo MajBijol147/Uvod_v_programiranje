@@ -19,7 +19,7 @@ def url_stevilo(st):
 #   po želji lahko več (npr. 1500).
 # vsaka skladba je svoj spletni naslov, zato mora program poklicati 1126
 #   posameznih naslovov, kar traja cca. 5 min.
-#for x in range(1, 1126 + 1):
+# for x in range(1, 1126 + 1):
 #    print(x)
 #    url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{url_stevilo(x)}?lang=en"
 #    odziv = requests.get(url, headers=headers)
@@ -36,7 +36,7 @@ vzorci = {
     "psalm": r'<dd class="col-sm-9">Psalm: .*?>(?P<psalm>.+?)</a>',
     "pismo": r"<br>Epistel: .*?>(?P<pismo>.+?)</a>",
     "evangelij": r"<br>Gospel: .*?>(?P<evangelij>.+?)</a>",
-    "aranzma": r'"Scoring":\["(?P<aranzma>.*?)"\]',
+    "zasedba": r'"Scoring":\["(?P<zasedba>.*?)"\]',
     "nastanek": r'"Date of origin":".*?(?P<nastanek>\d{4}).*?"',
     "povezave": r"is part of.*?>(?P<povezave>.+?)</a>",
 }
@@ -51,7 +51,7 @@ for x in range(1, 1126 + 1):
         besedilo = dat.read()
         skladba.update({"sifra": x})
         for vzorec in vzorci:
-            podatek = re.findall(vzorci[vzorec], besedilo)
+            podatek = re.findall(vzorci[vzorec], besedilo, flags=re.DOTALL)
             if vzorec == "citati_biblije":
                 if podatek == ['<dt class="col-sm-3">Proper</dt>']:
                     podatek = ["DA"]
@@ -60,12 +60,17 @@ for x in range(1, 1126 + 1):
                 skladba.update({vzorec: podatek[0]})
             elif len(podatek) == 0:
                 skladba.update({vzorec: "NA"})
+            elif vzorec == "BWV":
+                if podatek[0].replace(".", "", 1).isnumeric() == False:
+                    skladba.update({vzorec: "NA"})
+                else:
+                    skladba.update({vzorec: podatek[0]})
             else:
                 skladba.update({vzorec: podatek[0]})
         podatki.append(skladba)
 
 # Seznam s slovarji pretvori v CSV datoteko
-with open("podatki.csv", "w", newline="", encoding="utf-8") as dat:
+with open("podatki_bach.csv", "w", newline="", encoding="utf-8") as dat:
     writer = csv.writer(dat)
     writer.writerow(
         [
@@ -77,7 +82,7 @@ with open("podatki.csv", "w", newline="", encoding="utf-8") as dat:
             "psalm",
             "pismo",
             "evangelij",
-            "aranzma",
+            "zasedba",
             "nastanek",
             "povezave",
         ]
@@ -93,7 +98,7 @@ with open("podatki.csv", "w", newline="", encoding="utf-8") as dat:
                 skladba["psalm"],
                 skladba["pismo"],
                 skladba["evangelij"],
-                skladba["aranzma"],
+                skladba["zasedba"],
                 skladba["nastanek"],
                 skladba["povezave"],
             ]
