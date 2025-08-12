@@ -19,12 +19,12 @@ def url_stevilo(st):
 #   po želji lahko več (npr. 1500).
 # vsaka skladba je svoj spletni naslov, zato mora program poklicati 1126
 #   posameznih naslovov, kar traja cca. 5 min.
-for x in range(1, 1126 + 1):
-    print(x)
-    url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{url_stevilo(x)}?lang=en"
-    odziv = requests.get(url, headers=headers)
-    with open(f"skladba{x}.html", "w", encoding="utf-8") as dat:
-        dat.write(odziv.text)
+#for x in range(1, 1126 + 1):
+#    print(x)
+#    url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{url_stevilo(x)}?lang=en"
+#    odziv = requests.get(url, headers=headers)
+#    with open(f"skladba{x}.html", "w", encoding="utf-8") as dat:
+#        dat.write(odziv.text)
 
 # vzorci za regularne izraze ter podatki, ki bodo izlusčeni.
 # SPREMENI BWV VZOREC, NAJ IŠČE V NASLOVU
@@ -37,10 +37,9 @@ vzorci = {
     "pismo": r"<br>Epistel: .*?>(?P<pismo>.+?)</a>",
     "evangelij": r"<br>Gospel: .*?>(?P<evangelij>.+?)</a>",
     "aranzma": r'"Scoring":\["(?P<aranzma>.*?)"\]',
-    "nastanek": r'"Date of origin":"(?P<nastanek>\d+?)"',
+    "nastanek": r'"Date of origin":".*?(?P<nastanek>\d{4}).*?"',
     "povezave": r"is part of.*?>(?P<povezave>.+?)</a>",
 }
-# Bach-Werke-Verzeichnis">BWV&nbsp;(?P<BWV>\d+?)</abbr>
 
 
 # iz surovega html izlušči podatke. Za vsako skladbo ustvari slovar,
