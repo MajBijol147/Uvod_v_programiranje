@@ -40,7 +40,7 @@ vzorci = {
     "nastanek": r'"Date of origin":".*?(?P<nastanek>\d{4}).*?"',
     "povezave": r"is part of.*?>(?P<povezave>.+?)</a>",
 }
-#<span class="worktitle">(?P<naslov>.+?)</span>
+# <span class="worktitle">(?P<naslov>.+?)</span>
 
 # iz surovega html izlušči podatke. Za vsako skladbo ustvari slovar,
 #   in nato slovarje shrani v seznam
@@ -65,6 +65,8 @@ for x in range(1, 1126 + 1):
                     skladba.update({vzorec: "NA"})
                 else:
                     skladba.update({vzorec: podatek[0]})
+            elif vzorec == "nastanek":
+                skladba.update({vzorec: podatek[1]})
             else:
                 skladba.update({vzorec: podatek[0]})
         podatki.append(skladba)
