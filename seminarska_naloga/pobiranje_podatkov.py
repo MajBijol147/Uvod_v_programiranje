@@ -29,7 +29,7 @@ def url_stevilo(st):
 # vzorci za regularne izraze ter podatki, ki bodo izlusčeni.
 # SPREMENI BWV VZOREC, NAJ IŠČE V NASLOVU
 vzorci = {
-    "naslov": r'<span class="worktitle">(?P<naslov>.+?)</span>',
+    "naslov": r'<span class="worktitle">(?P<naslov>.+?)(?:(?:\n<br)|(?:</span>))',
     "BWV": r"<title>Bach digital - .+? BWV (?P<BWV>.*?)</title>",
     "zanr": r'<dt class="col-sm-3">Genre</dt>\n<dd class="col-sm-9">(?P<zanr>.+?)</dd>',
     "citati_biblije": r'<dt class="col-sm-3">Proper</dt>',
@@ -40,7 +40,7 @@ vzorci = {
     "nastanek": r'"Date of origin":".*?(?P<nastanek>\d{4}).*?"',
     "povezave": r"is part of.*?>(?P<povezave>.+?)</a>",
 }
-
+#<span class="worktitle">(?P<naslov>.+?)</span>
 
 # iz surovega html izlušči podatke. Za vsako skladbo ustvari slovar,
 #   in nato slovarje shrani v seznam
