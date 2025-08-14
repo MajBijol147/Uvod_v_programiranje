@@ -16,18 +16,18 @@ def url_stevilo(st):
 
 
 # pobiranje surovih HTML podatkov. Default nastavitve pobere do vključno 1126,
-#   po želji lahko več (npr. 1500).
+# po želji lahko več (npr. 1500).
 # vsaka skladba je svoj spletni naslov, zato mora program poklicati 1126
-#   posameznih naslovov, kar traja cca. 5 min.
-# for x in range(1, 1126 + 1):
-#    print(x)
-#    url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{url_stevilo(x)}?lang=en"
-#    odziv = requests.get(url, headers=headers)
-#    with open(f"skladba{x}.html", "w", encoding="utf-8") as dat:
-#        dat.write(odziv.text)
+# posameznih naslovov, kar traja cca. 5 min.
+def poberi_html():
+    for x in range(1, 1126 + 1):
+        print(f"skladba: {x}")
+        url = f"https://www.bach-digital.de/receive/BachDigitalWork_work_0000{url_stevilo(x)}?lang=en"
+        odziv = requests.get(url, headers=headers)
+        with open(f"skladba{x}.html", "w", encoding="utf-8") as dat:
+            dat.write(odziv.text)
 
-# vzorci za regularne izraze ter podatki, ki bodo izlusčeni.
-# SPREMENI BWV VZOREC, NAJ IŠČE V NASLOVU
+
 vzorci = {
     "naslov": r'<span class="worktitle">(?P<naslov>.+?)(?:(?:\n<br)|(?:</span>))',
     "BWV": r"<title>Bach digital - .+? BWV (?P<BWV>.*?)</title>",
@@ -37,71 +37,78 @@ vzorci = {
     "pismo": r"<br>Epistel: .*?>(?P<pismo>.+?)</a>",
     "evangelij": r"<br>Gospel: .*?>(?P<evangelij>.+?)</a>",
     "zasedba": r'"Scoring":\["(?P<zasedba>.*?)"\]',
-    "nastanek": r'"Date of origin":".*?(?P<nastanek>\d{4}).*?"',
+    "leto": r'"Date of origin":".*?(?P<leto>\d{4}).*?",',
     "povezave": r"is part of.*?>(?P<povezave>.+?)</a>",
 }
-# <span class="worktitle">(?P<naslov>.+?)</span>
+podatki = []
+
 
 # iz surovega html izlušči podatke. Za vsako skladbo ustvari slovar,
-#   in nato slovarje shrani v seznam
-podatki = []
-for x in range(1, 1126 + 1):
-    with open(f"skladba{x}.html", encoding="utf-8") as dat:
-        skladba = {}
-        besedilo = dat.read()
-        skladba.update({"sifra": x})
-        for vzorec in vzorci:
-            podatek = re.findall(vzorci[vzorec], besedilo, flags=re.DOTALL)
-            if vzorec == "citati_biblije":
-                if podatek == ['<dt class="col-sm-3">Proper</dt>']:
-                    podatek = ["DA"]
-                else:
-                    podatek = ["NE"]
-                skladba.update({vzorec: podatek[0]})
-            elif len(podatek) == 0:
-                skladba.update({vzorec: "NA"})
-            elif vzorec == "BWV":
-                if podatek[0].replace(".", "", 1).isnumeric() == False:
+# in nato slovarje shrani v seznam
+# vzorci za regularne izraze ter podatki, ki bodo izlusčeni.
+def izlusci_podatke():
+    for x in range(1, 1126 + 1):
+        with open(f"skladba{x}.html", encoding="utf-8") as dat:
+            skladba = {}
+            besedilo = dat.read()
+            skladba.update({"sifra": x})
+            for vzorec in vzorci:
+                podatek = re.findall(vzorci[vzorec], besedilo, flags=re.DOTALL)
+                if vzorec == "citati_biblije":
+                    if podatek == ['<dt class="col-sm-3">Proper</dt>']:
+                        podatek = ["DA"]
+                    else:
+                        podatek = ["NE"]
+                    skladba.update({vzorec: podatek[0]})
+                elif len(podatek) == 0:
                     skladba.update({vzorec: "NA"})
+                elif vzorec == "BWV":
+                    if podatek[0].replace(".", "", 1).isnumeric() == False:
+                        skladba.update({vzorec: "NA"})
+                    else:
+                        skladba.update({vzorec: podatek[0]})
+                elif vzorec == "leto":
+                    if len(podatek) > 1:
+                        skladba.update({vzorec: podatek[1]})
+                    else:
+                        skladba.update({vzorec: podatek[0]})
                 else:
                     skladba.update({vzorec: podatek[0]})
-            elif vzorec == "nastanek":
-                skladba.update({vzorec: podatek[1]})
-            else:
-                skladba.update({vzorec: podatek[0]})
-        podatki.append(skladba)
+            podatki.append(skladba)
+
 
 # Seznam s slovarji pretvori v CSV datoteko
-with open("podatki_bach.csv", "w", newline="", encoding="utf-8") as dat:
-    writer = csv.writer(dat)
-    writer.writerow(
-        [
-            "sifra",
-            "naslov",
-            "BWV",
-            "zanr",
-            "citati_biblije",
-            "psalm",
-            "pismo",
-            "evangelij",
-            "zasedba",
-            "nastanek",
-            "povezave",
-        ]
-    )
-    for skladba in podatki:
+def shrani_csv():
+    with open("podatki_bach.csv", "w", newline="", encoding="utf-8") as dat:
+        writer = csv.writer(dat)
         writer.writerow(
             [
-                skladba["sifra"],
-                skladba["naslov"],
-                skladba["BWV"],
-                skladba["zanr"],
-                skladba["citati_biblije"],
-                skladba["psalm"],
-                skladba["pismo"],
-                skladba["evangelij"],
-                skladba["zasedba"],
-                skladba["nastanek"],
-                skladba["povezave"],
+                "sifra",
+                "naslov",
+                "BWV",
+                "zanr",
+                "citati_biblije",
+                "psalm",
+                "pismo",
+                "evangelij",
+                "zasedba",
+                "leto",
+                "povezave",
             ]
         )
+        for skladba in podatki:
+            writer.writerow(
+                [
+                    skladba["sifra"],
+                    skladba["naslov"],
+                    skladba["BWV"],
+                    skladba["zanr"],
+                    skladba["citati_biblije"],
+                    skladba["psalm"],
+                    skladba["pismo"],
+                    skladba["evangelij"],
+                    skladba["zasedba"],
+                    skladba["leto"],
+                    skladba["povezave"],
+                ]
+            )
