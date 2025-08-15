@@ -17,8 +17,6 @@ def url_stevilo(st):
 
 # pobiranje surovih HTML podatkov. Default nastavitve pobere do vključno 1126,
 # po želji lahko več (npr. 1500).
-# vsaka skladba je svoj spletni naslov, zato mora program poklicati 1126
-# posameznih naslovov, kar traja cca. 5 min.
 def poberi_html():
     for x in range(1, 1126 + 1):
         print(f"skladba: {x}")
@@ -45,7 +43,6 @@ podatki = []
 
 # iz surovega html izlušči podatke. Za vsako skladbo ustvari slovar,
 # in nato slovarje shrani v seznam
-# vzorci za regularne izraze ter podatki, ki bodo izlusčeni.
 def izlusci_podatke():
     for x in range(1, 1126 + 1):
         with open(f"skladba{x}.html", encoding="utf-8") as dat:

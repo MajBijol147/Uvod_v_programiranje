@@ -1,4 +1,4 @@
-from pobiranje_podatkov import poberi_html, izlusci_podatke, shrani_csv
+from zajem_podatkov import poberi_html, izlusci_podatke, shrani_csv
 
 
 def main():
