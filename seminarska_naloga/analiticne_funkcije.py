@@ -29,7 +29,7 @@ def razlicice_zanri():
     razlicice = list()
     for mode in modes:
         razlicice.append(bach_BWV_dropna.value_counts()[mode])
-    bach_BWVzanr_dropna_modes["max. različic"] = razlicice
+    bach_BWVzanr_dropna_modes["modus različic"] = razlicice
     bach_BWVzanr_dropna_counts = bach_BWVzanr_dropna.groupby("zanr").agg(
         pd.Series.value_counts
     )
@@ -45,20 +45,12 @@ def razlicice_zanri():
 
 # število skladb po žanrih
 def skladbe_po_zanri():
-    bach_BWVzanr = pd.DataFrame(bach.BWV)
-    bach_BWVzanr["zanr"] = bach.zanr.values.tolist()
-    bach_BWVzanr_po_zanr = bach_BWVzanr.dropna().groupby("zanr")
-    return bach_BWVzanr_po_zanr.size()
-
-
-# najpogostejši žanr
-def najpogostejsi_zanr():
-    return bach.zanr.mode()
+    return bach.zanr.value_counts()
 
 
 # število del z citati biblije
 def skladbe_z_citati():
-    return bach[bach.citati_biblije == "DA"].naslov.count()
+    return int(bach[bach.citati_biblije == "DA"].naslov.count())
 
 
 # razmerje del z bibličnimi citati glede na žanr
@@ -103,7 +95,7 @@ def delezi_zanrov():
 def modus_odlomki_skupaj():
     odlomki = pd.DataFrame(bach.psalm)
     odlomki["pismo"] = bach.pismo.values.tolist()
-    odlomki["evanglij"] = bach.evangelij.values.tolist()
+    odlomki["evangelij"] = bach.evangelij.values.tolist()
     return odlomki.mode()
 
 
@@ -119,7 +111,7 @@ def modus_odlomki_posebej():
 def modus_odlomki_po_zanru():
     odlomki = pd.DataFrame(bach.psalm)
     odlomki["pismo"] = bach.pismo.values.tolist()
-    odlomki["evanglij"] = bach.evangelij.values.tolist()
+    odlomki["evangelij"] = bach.evangelij.values.tolist()
     odlomki["zanr"] = bach.zanr.values.tolist()
     return odlomki.dropna().groupby("zanr").agg(pd.Series.mode)
 
@@ -128,9 +120,9 @@ def modus_odlomki_po_zanru():
 def modus_odlomki_po_letu():
     odlomki = pd.DataFrame(bach.psalm)
     odlomki["pismo"] = bach.pismo.values.tolist()
-    odlomki["evanglij"] = bach.evangelij.values.tolist()
-    odlomki["nastanek"] = bach.nastanek.values.tolist()
-    return odlomki.dropna().groupby("nastanek").agg(pd.Series.mode).drop([0])
+    odlomki["evangelij"] = bach.evangelij.values.tolist()
+    odlomki["leto"] = bach.leto.values.tolist()
+    return odlomki.dropna().groupby("leto").agg(pd.Series.mode).drop([0])
 
 
 # najpogostejša zasedba
@@ -140,7 +132,7 @@ def modus_zasedba():
 
 # 5 najpogostejših zasedb
 def modus_5_zasedb():
-    return bach.zasedba.value_counts().iloc[0:6]
+    return pd.DataFrame(bach.zasedba.value_counts().iloc[0:6])
 
 
 # število in število pojavitev posameznih glasbil
@@ -170,7 +162,7 @@ def posamezna_glasbila_pojavitve_plot():
 
 def posamezna_glasbila_pojavitve():
     glasbila = {}
-    for zasedba in bach.zasedba.values.tolist():
+    for zasedba in bach.zasedba.dropna().values.tolist():
         if type(zasedba) is str:
             for glasbilo in zasedba.split(", "):
                 if glasbilo not in glasbila:
@@ -183,10 +175,10 @@ def posamezna_glasbila_pojavitve():
             else:
                 glasbila[zasedba] = glasbila[zasedba] + 1
     glasbila_pojavitve = pd.DataFrame(
-        {"glasbilo": glasbila.keys(), "pojavitve": glasbila.values()},
+        {"pojavitve": glasbila.values()},
         index=list(glasbila.keys()),
     )
-    glasbila_pojavitve_urejeno = glasbila_pojavitve.sort_values(
+    glasbila_pojavitve_urejeno = glasbila_pojavitve.dropna().sort_values(
         "pojavitve", ascending=False
     )
     return glasbila_pojavitve_urejeno
@@ -244,11 +236,29 @@ def povprecna_velikost_zasedbe_po_zanru():
     return povp_zasedbe_po_zanru
 
 
+def povprecna_velikost_zasedbe_po_zanru_plot():
+    velikost_zasedbe_po_zanru = pd.DataFrame(bach.zasedba)
+    velikost_zasedbe_po_zanru["zanr"] = bach.zanr.values.tolist()
+    velikost_zasedbe_po_zanru = velikost_zasedbe_po_zanru.dropna()
+    velikost = []
+    for zasedba in velikost_zasedbe_po_zanru.zasedba.values.tolist():
+        velikost.append(len(zasedba.split(",")))
+    velikost_zasedbe_po_zanru["povprečje"] = velikost
+    povp_zasedbe_po_zanru = (
+        velikost_zasedbe_po_zanru[["zanr", "povprečje"]]
+        .groupby("zanr")
+        .agg(pd.Series.mean)
+    )
+    return povp_zasedbe_po_zanru.plot(kind="barh")
+
+
 # povprečna velikost zasedbe na leto
 def povprecna_velikost_zasedbe_po_letu():
     zasedba_po_letu = pd.DataFrame(bach.zasedba)
     zasedba_po_letu["leto"] = bach.leto.values.tolist()
-    zasedba_po_letu = zasedba_po_letu[zasedba_po_letu.leto != 0000].dropna()
+    zasedba_po_letu = zasedba_po_letu[
+        (zasedba_po_letu.leto != 0000) & (zasedba_po_letu.leto <= 1750)
+    ].dropna()
     velikost = []
     for zasedba in zasedba_po_letu.zasedba.values.tolist():
         velikost.append(len(zasedba.split(",")))
@@ -264,12 +274,17 @@ def povprecna_velikost_zasedbe_po_letu():
 # število skladb na leto
 def skladbe_na_leto():
     return (
-        bach.leto[bach.leto != 0000]
+        bach.leto[(bach.leto != 0000) & (bach.leto <= 1750)]
         .dropna()
         .value_counts()
         .sort_index()
         .plot(kind="line")
     )
+
+
+# najbolj produktivno leto
+def modus_skladbe_na_leto():
+    return f"modus skladb na leto: {int(bach.leto[bach.leto != 0000].dropna().mode().iloc[0])}"
 
 
 # najpogostejše povezave
